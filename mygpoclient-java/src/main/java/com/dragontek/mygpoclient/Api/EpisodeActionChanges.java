@@ -12,13 +12,13 @@ import java.util.List;
 public class EpisodeActionChanges {
 	
 	/** A list of EpisodeAction objects */
-	public List<EpisodeAction> _actions = new ArrayList<EpisodeAction>();
+	public List<EpisodeAction> actions = new ArrayList<EpisodeAction>();
 	/** A timestamp value for use in future requests */
-	public long _since = 0;
+	public long since;
 	
 	public EpisodeActionChanges(List<EpisodeAction> actions, long since)
 	{
-		this._actions = actions;
-		this._since = since;
+		this.actions = actions;
+		this.since = since;
 	}
 }
