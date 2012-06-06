@@ -1,4 +1,6 @@
 mygpoclient-java
 ================
 
-Java implementation of the mygpoclient
+Java implementation mygpoclient.
+
+NOTE: I am in the process of moving this to a Maven project, and have not tested fully.
