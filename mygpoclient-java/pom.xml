@@ -3,6 +3,9 @@
 	<groupId>com.dragontek</groupId>
 	<artifactId>mygpoclient-java</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>mygpoclient-java</name>
+	<description>Java implementation of mygpoclient.</description>
+	<url>http://dragontek.github.com</url>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
