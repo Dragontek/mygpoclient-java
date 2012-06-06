@@ -1,5 +1,9 @@
 package com.dragontek.mygpoclient.Api;
 
+import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.Map;
+
 /**
  * This class encapsulates a podcast device
  *
@@ -13,28 +17,30 @@ public class PodcastDevice {
 	/** A user-defined "name" for this device */
 	public String caption;
 	/** A valid type of podcast device (see VALID_TYPES) */
-	public String _type;
+	public String type;
 	/** The number of podcasts this device is subscribed to */
-	public int _subscriptions;
+	public int subscriptions;
 
-	private static String[] VALID_TYPES = new String[] { "desktop", "laptop", "mobile", "server", "other" };
+	public static String[] VALID_TYPES = new String[] { "desktop", "laptop", "mobile", "server", "other" };
 
 	public PodcastDevice(String deviceId, String caption, String type, int subscriptions)
 	{
 		if(!Arrays.asList(VALID_TYPES).contains(type))
-		{
-			// TODO: Throw error	
-		}
+			throw new IllegalArgumentException(String.format("Invalid device type '%1' (see VALID_TYPES)", type));
 			
 		this.deviceId = deviceId;
 		this.caption = caption;
-		this._type = type;
-		this._subscriptions = subscriptions;
+		this.type = type;
+		this.subscriptions = subscriptions;
 	}
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return super.toString();
+		return String.format("%1(%2, %3, %4, %5)", this.getClass().getSimpleName(), this.deviceId, this.caption, this.type, this.subscriptions);
+	}
+	
+	public PodcastDevice fromDictionary(Dictionary<String, String> m)
+	{
+		return new PodcastDevice(m.get("id"), m.get("caption"), m.get("type"), Integer.parseInt( m.get("subscriptions") ));
 	}
 }
