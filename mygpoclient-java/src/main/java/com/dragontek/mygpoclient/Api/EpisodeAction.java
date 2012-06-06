@@ -28,27 +28,23 @@ public class EpisodeAction {
 	/** The total time of the episode (for play events) */
 	public Integer total = null;
 
-	public static List<String> VALID_ACTIONS =  Arrays.asList("download", "play", "delete", "new");
+	public static String[] VALID_ACTIONS =  new String[] { "download", "play", "delete", "new" };
 
 	public EpisodeAction(String podcast, String episode, String action, String deviceId, String timestamp, Integer started, Integer position, Integer total)
 	{
         // Check if the action is valid
-		if(!VALID_ACTIONS.contains(action))
-		{
-			throw new InvalidParameterException(String.format("Invalid action type '%s' (see VALID_TYPES)", action));
-		}
+		if(!Arrays.asList(VALID_ACTIONS).contains(action))
+			throw new IllegalArgumentException(String.format("Invalid action '%s' (see VALID_ACTIONS)", action));
 
         // Disallow play-only attributes for non-play actions
 		if(action != "play")
 		{
-			/*
 			if(started != null)
-				System.out.println("started:" + started);
+				throw new IllegalArgumentException("Started can only be set for the 'play' action");
 			if(position != null)
-				System.out.println("position:" + position);
+				throw new IllegalArgumentException("Position can only be set for the 'play' action");
 			if(total != null)
-				System.out.println("total:" + total);
-			*/
+				throw new IllegalArgumentException("Total can only be set for the 'play' action");
 		}
 
         // Check the format of the timestamp value
@@ -60,9 +56,7 @@ public class EpisodeAction {
 
         // Check if we have a "position" value if we have started or total
         if(position != null && (started != null | total != null))
-        {
-              //  raise ValueError('Started or total set, but no position given')
-        }
+        	throw new IllegalArgumentException("Started or total set, but no position given");
 
         this.podcast = podcast;
         this.episode = episode;

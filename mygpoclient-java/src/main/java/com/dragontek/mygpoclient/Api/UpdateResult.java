@@ -11,13 +11,13 @@ import java.util.Map;
 public class UpdateResult {
 	
 	/** A list of (old_url, new_url) tuples */
-	protected Map<String, String> _updateUrls;
+	public Map<String, String> updateUrls;
 	/** A timestamp value for use in future requests */
-	protected long _since;
+	public long since;
 	
 	public UpdateResult(Map<String, String> updateUrls, long since)
 	{
-		this._updateUrls = updateUrls;
-		this._since = since;
+		this.updateUrls = updateUrls;
+		this.since = since;
 	}
 }
