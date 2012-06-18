@@ -4,6 +4,7 @@
 	<artifactId>mygpoclient-java</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>mygpoclient-java</name>
+	<packaging>jar</packaging>
 	<description>Java implementation of mygpoclient.</description>
 	<url>http://dragontek.github.com</url>
 	<dependencies>
@@ -20,4 +21,31 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>   
+       <build>
+       <plugins>
+       <!-- pour éter l'erreur maven : use -source 5 or higher toenable annotations -->
+                   <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+           <plugin>
+             <!-- Build an executable JAR -->
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-jar-plugin</artifactId>
+             <configuration>
+              <archive>
+               <manifest>
+                 <addClasspath>true</addClasspath>
+                 <classpathPrefix>lib/</classpathPrefix>
+                 <mainClass>com.dragontek.mygpoclient.Main</mainClass>
+                </manifest>
+               </archive>
+              </configuration>
+            </plugin>
+       </plugins>
+       </build>
 </project>
