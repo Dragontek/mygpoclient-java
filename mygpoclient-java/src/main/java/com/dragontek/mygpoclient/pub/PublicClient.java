@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import com.dragontek.mygpoclient.Global;
@@ -34,6 +35,7 @@ public class PublicClient
 	public Locator _locator;
 	public JsonClient _client;
 	public static String FORMAT = "json";
+	private Gson _gson;
 	
 	/**
 	 * Creates a new Public API client
@@ -44,6 +46,7 @@ public class PublicClient
 	{
 		this._locator = new Locator(host);
 		this._client = new JsonClient(host);
+		this._gson = new Gson();
 	}
 	
 	/**
@@ -63,13 +66,11 @@ public class PublicClient
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public List<ToplistPodcast> getToplist(int count) throws ClientProtocolException, IOException
+	public List<ToplistPodcast> getToplist(int count) throws JsonSyntaxException, ClientProtocolException, IOException
 	{
 		String uri = _locator.toplistUri(count);
-		Gson gson = new Gson();
 		Type collectionType = new TypeToken<ArrayList<ToplistPodcast>>(){}.getType();
-		List<ToplistPodcast> toplist = gson.fromJson(_client.GET(uri), collectionType);
-		return toplist;
+		return _gson.fromJson(_client.GET(uri), collectionType);
 	}
 	
 	/**
@@ -78,7 +79,7 @@ public class PublicClient
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public List<ToplistPodcast> getToplist() throws ClientProtocolException, IOException
+	public List<ToplistPodcast> getToplist() throws JsonSyntaxException, ClientProtocolException, IOException
 	{
 		return getToplist(Global.TOPLIST_DEFAULT);
 	}
@@ -90,39 +91,22 @@ public class PublicClient
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public List<Podcast> searchPodcast(String query) throws ClientProtocolException, IOException
+	public List<Podcast> searchPodcast(String query) throws JsonSyntaxException, ClientProtocolException, IOException
 	{
 		String uri = null;
-		List<Podcast> list = new ArrayList<Podcast>();
-
 		try {
 			uri = _locator.searchUri(URLEncoder.encode(query, "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
-			JSONArray array = new JSONArray(_client.GET(uri));
-			for(int i=0; i < array.length(); i++)
-			{
-				JSONObject json = array.optJSONObject(i);
-				list.add( new Podcast( json ) );
-			}
-		} catch (Exception jex) {
-			jex.printStackTrace();
-		}
-		return list;
+		Type collectionType = new TypeToken<ArrayList<Podcast>>(){}.getType();
+		return _gson.fromJson(_client.GET(uri), collectionType);
 	}
 	
 	public Podcast getPodcastData(String url) throws ClientProtocolException, IOException
 	{
 		String uri = _locator.getPodcastDataUri(url);
-		try {
-			JSONObject json = new JSONObject(_client.GET(uri));
-			return new Podcast(json);
-		} catch (Exception jex) {
-			jex.printStackTrace();
-			return null;
-		}
+		return _gson.fromJson(_client.GET(uri), Podcast.class);
 	}
 }

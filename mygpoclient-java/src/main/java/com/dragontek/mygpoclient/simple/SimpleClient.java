@@ -2,6 +2,7 @@ package com.dragontek.mygpoclient.simple;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import org.json.JSONObject;
 import com.dragontek.mygpoclient.Global;
 import com.dragontek.mygpoclient.Locator;
 import com.dragontek.mygpoclient.json.JsonClient;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Client for the gpodder.net Simple API
@@ -28,8 +31,8 @@ public class SimpleClient
 {
 	public Locator locator;
 	public JsonClient client;
-	
-	public static String FORMAT = "FORMAT";
+	private Gson _gson;
+	public static String FORMAT = "json";
 	/**
 	 * Creates a new Simple API client
 
@@ -56,6 +59,7 @@ public class SimpleClient
 	{
 		this.locator = new Locator(username, host);
 		this.client = new JsonClient(username, password, host);
+		this._gson = new Gson();
 	}
 	
 	public String getAuthToken()
@@ -64,51 +68,22 @@ public class SimpleClient
 	}
 	public List<String> getSubscriptions(String deviceId) throws ClientProtocolException, IOException
 	{
-		List<String> list = new ArrayList<String>();
 		String uri = locator.subscriptionsUri(deviceId);
-		try {
-			JSONArray array = new JSONArray(client.GET(uri));
-			for(int i=0; i < array.length(); i++)
-			{
-				list.add(array.optString(i));
-			}
-		} catch (JSONException jex) {
-			jex.printStackTrace();
-		}
-		return list;
+		Type collectionType = new TypeToken<ArrayList<String>>(){}.getType();
+		return _gson.fromJson(client.GET(uri), collectionType);
 	}
 	
 	public boolean putSubscriptions(String deviceId, List<String> urls) throws ClientProtocolException, IOException
 	{
 		String uri = locator.subscriptionsUri(deviceId);
-		JSONArray array = new JSONArray(urls);
-		StringEntity data = null;
-		try {
-			data = new StringEntity(array.toString());
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String response = client.PUT(uri, data);
-		System.out.println(String.format("RESPONSE:\r\n%s", response));
+		String response = client.PUT(uri, new StringEntity(_gson.toJson(urls)));
 		return (response == "");
 	}
 	
 	public List<Podcast> getSuggestions(int count) throws ClientProtocolException, IOException
 	{
-		List<Podcast> list = new ArrayList<Podcast>();
-
 		String uri = locator.suggestionsUri(count);
-		try {
-			JSONArray array = new JSONArray(client.GET(uri));
-			for(int i=0; i < array.length(); i++)
-			{
-				JSONObject json = array.optJSONObject(i);
-				list.add( new Podcast( json ) );
-			}
-		} catch (JSONException jex) {
-			jex.printStackTrace();
-		}
-		return list;
+		Type collectionType = new TypeToken<ArrayList<Podcast>>(){}.getType();
+		return _gson.fromJson(client.GET(uri), collectionType);
 	}
 }
