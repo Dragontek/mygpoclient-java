@@ -22,31 +22,29 @@ import com.google.gson.reflect.TypeToken;
 
 public class FeedServiceClient extends JsonClient {
 
-	// TODO: He asks not to use his service without permission first.
-	// Need to either set this up in my own GAE or get permission.
-	public static String BASE_URL="mygpo-feedservice.appspot.com";
-	
+	private static String BASE_URL="mygpo-feedservice.appspot.com";
 	private String base_url;
 	
 	public FeedServiceClient()
 	{
-		this(null, null, BASE_URL);
+		this(BASE_URL);
 	}
-	// TODO: The rest of the overloaded constructors?
-	public FeedServiceClient(String username, String password, String base_url)
+
+	public FeedServiceClient(String base_url){
+		this.base_url = base_url;
+	}
+
+	public FeedServiceClient(String base_url, String username, String password)
 	{ 
 		super(username, password, base_url);
 		this.base_url = base_url;
 	}
-
+	
 	@Override
 	public HttpRequest prepareRequest(String method, String uri, HttpEntity data) {
-		
 		HttpRequest request = super.prepareRequest(method, uri, data);
 		request.addHeader("Accept", "application/json");
 		request.addHeader("Accept-Encoding", "gzip");
-	
-		
 		return request;
 	}
 	
@@ -98,8 +96,9 @@ public class FeedServiceClient extends JsonClient {
 	}
 	public String buildUrl(List<NameValuePair> kwargs)
 	{
+		//TODO: We don't really need this if we're going to POST all params
 		String args = URLEncodedUtils.format(kwargs, "UTF8");
-		String query_url = Util.join(new String[]{this.base_url, "parse"});
+		String query_url = Util.join(new String[]{this.base_url, "/parse"});
 		return String.format("%s?%s", query_url, args);
 				
 	}
