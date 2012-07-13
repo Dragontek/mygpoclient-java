@@ -5,7 +5,8 @@ Java implementation mygpoclient.
 
 My original goal for this project was to try to do a direct port from Python to Java.  I have tried to stay pretty close to the original source: http://thp.io/2010/mygpoclient/
 
-NOTE: I am in the process of moving this to a Maven project, and have not tested fully.
+RECENT:
+* FeedService implementation
 
 TODO:
 * Build Test Cases and automate testing
