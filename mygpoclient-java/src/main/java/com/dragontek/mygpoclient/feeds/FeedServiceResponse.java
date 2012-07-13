@@ -1,9 +1,12 @@
 package com.dragontek.mygpoclient.feeds;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import org.json.JSONArray;
 
-public class FeedServiceResponse extends HashMap<String, Object> {
+public class FeedServiceResponse extends ArrayList<Feed> {
 
 	/*
 	 *     def __init__(self, feeds, last_modified, feed_urls):
@@ -37,9 +40,9 @@ public class FeedServiceResponse extends HashMap<String, Object> {
 	public String[] feed_urls;
 	public String[] indexed_feeds = {};
 	
-	public FeedServiceResponse(JSONArray feeds, long last_modified, String[] feed_urls)
+	public FeedServiceResponse(List<Feed> feeds, long last_modified, String[] feed_urls)
 	{
-
+		super.addAll(feeds);
 	}
 	
 	public void getFeeds()

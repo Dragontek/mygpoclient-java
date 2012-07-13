@@ -2,6 +2,7 @@ package com.dragontek.mygpoclient.feeds;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.HttpEntity;
@@ -15,9 +16,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import com.dragontek.mygpoclient.Util;
 import com.dragontek.mygpoclient.json.JsonClient;
+import com.dragontek.mygpoclient.simple.Podcast;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class FeedServiceClient extends JsonClient {
 
+	// TODO: He asks not to use his service without permission first.
+	// Need to either set this up in my own GAE or get permission.
 	public static String BASE_URL="mygpo-feedservice.appspot.com";
 	
 	private String base_url;
@@ -72,35 +78,21 @@ public class FeedServiceClient extends JsonClient {
 	public FeedServiceResponse parseFeeds(String[] feed_urls, long last_modified, boolean strip_html, boolean use_cache, boolean inline_logo, int scale_logo, String logo_format) throws ClientProtocolException, IOException
 	{
 		List<NameValuePair> args = new ArrayList<NameValuePair>();
-		args.add(new BasicNameValuePair("strip_html", Boolean.toString(strip_html)));
-		args.add(new BasicNameValuePair("use_cache", Boolean.toString(use_cache)));
-		args.add(new BasicNameValuePair("inline_logo", Boolean.toString(inline_logo)));
+		args.add(new BasicNameValuePair("strip_html", strip_html ? "1" : "0" ));
+		args.add(new BasicNameValuePair("use_cache", use_cache ? "1" : "0" ));
+		args.add(new BasicNameValuePair("inline_logo", inline_logo ? "1" : "0" ));
 		args.add(new BasicNameValuePair("scale_logo", Integer.toString(scale_logo)));
 		args.add(new BasicNameValuePair("logo_format", logo_format));
-		String url = buildUrl(args);
-		
-		List<NameValuePair> urls = new ArrayList<NameValuePair>();
 		for(String feed_url : feed_urls)
 		{
-			urls.add(new BasicNameValuePair("url", feed_url));
+			args.add(new BasicNameValuePair("url", feed_url));
 		}
 		
-		UrlEncodedFormEntity post_data = null;
-		try {
-			post_data = new UrlEncodedFormEntity(urls);
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		UrlEncodedFormEntity post_data = new UrlEncodedFormEntity(args, "UTF-8");
 		
-		JSONArray response = new JSONArray();
-		try {
-			response = new JSONArray(this.POST(url, post_data));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("RESPONSE: " + response.toString());
+		Gson gson = new Gson();
+		Type collectionType = new TypeToken<ArrayList<Feed>>(){}.getType();
+		List<Feed> response = gson.fromJson(this.POST(this.base_url + "/parse" , post_data), collectionType);
 		
 		return new FeedServiceResponse(response, 0L, feed_urls);
 	}

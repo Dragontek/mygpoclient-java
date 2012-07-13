@@ -131,6 +131,7 @@ public class HttpClient extends DefaultHttpClient {
 	public String POST(String uri, HttpEntity data) throws ClientProtocolException, IOException
 	{
 		System.out.println(String.format("POST: %s \r\nDATA: %s", uri, data));
+		data.writeTo(System.out);
 		return request("POST", uri, data);
 	}
 	public String PUT(String uri, HttpEntity data) throws ClientProtocolException, IOException
