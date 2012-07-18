@@ -1,8 +1,5 @@
 package com.dragontek.mygpoclient.simple;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Container class for a podcast
  * Encapsulates the metadata for a podcast

@@ -10,13 +10,9 @@ import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import com.dragontek.mygpoclient.Util;
+
 import com.dragontek.mygpoclient.json.JsonClient;
-import com.dragontek.mygpoclient.simple.Podcast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -41,9 +37,9 @@ public class FeedServiceClient extends JsonClient {
 	}
 	
 	@Override
-	public HttpRequest prepareRequest(String method, String uri, HttpEntity data) {
+	public HttpRequest prepareRequest(String method, String uri, HttpEntity data) throws UnsupportedEncodingException {
 		HttpRequest request = super.prepareRequest(method, uri, data);
-		request.addHeader("Accept", "application/json");
+		//request.addHeader("If-Modified-Since", "");
 		request.addHeader("Accept-Encoding", "gzip");
 		return request;
 	}
@@ -93,14 +89,6 @@ public class FeedServiceClient extends JsonClient {
 		List<Feed> response = gson.fromJson(this.POST(this.base_url + "/parse" , post_data), collectionType);
 		
 		return new FeedServiceResponse(response, 0L, feed_urls);
-	}
-	public String buildUrl(List<NameValuePair> kwargs)
-	{
-		//TODO: We don't really need this if we're going to POST all params
-		String args = URLEncodedUtils.format(kwargs, "UTF8");
-		String query_url = Util.join(new String[]{this.base_url, "/parse"});
-		return String.format("%s?%s", query_url, args);
-				
 	}
 	
 }

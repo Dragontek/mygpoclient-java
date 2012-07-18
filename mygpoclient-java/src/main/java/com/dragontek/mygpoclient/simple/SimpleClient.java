@@ -1,16 +1,12 @@
 package com.dragontek.mygpoclient.simple;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.dragontek.mygpoclient.Global;
 import com.dragontek.mygpoclient.Locator;
@@ -29,9 +25,9 @@ import com.google.gson.reflect.TypeToken;
  */
 public class SimpleClient
 {
-	public Locator locator;
-	public JsonClient client;
-	private Gson _gson;
+	protected Locator locator;
+	protected JsonClient client;
+	protected Gson _gson;
 	public static String FORMAT = "json";
 	/**
 	 * Creates a new Simple API client

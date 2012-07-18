@@ -4,26 +4,27 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.SocketTimeoutException;
-import java.util.Properties;
+import java.io.UnsupportedEncodingException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthState;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 
 import com.dragontek.mygpoclient.Global;
@@ -52,40 +53,33 @@ public class HttpClient extends DefaultHttpClient {
 	
 	public HttpClient(String username, String password, String host, int port)
 	{
+		_targetHost = new HttpHost(host, port);
 		
-		//TODO: Should I move most or all of this to request();?
-		_targetHost = new HttpHost(host);
-		
-		if(username != null && password != null)
-		{
-			getCredentialsProvider().setCredentials(new AuthScope(host, port), new UsernamePasswordCredentials(username, password));
-			_localContext.setAttribute("preemptive-auth", new BasicScheme());
-		}
-	
+		if(username != null && password!= null)
+			getCredentialsProvider().setCredentials(new AuthScope(_targetHost.getHostName(), _targetHost.getPort()), new UsernamePasswordCredentials(username, password));
 	}
 	
-	protected HttpRequest prepareRequest(String method, String uri, HttpEntity entity)
+	protected HttpRequest prepareRequest(String method, String uri, HttpEntity entity) throws UnsupportedEncodingException
 	{
+		
+		HttpRequest request = new HttpGet(uri);
+		request.addHeader("User-agent", Global.USER_AGENT);
+
 		if(method == "POST")
 		{
-			HttpPost post = new HttpPost(uri);
-			post.setEntity(entity);
-			return post;
+			request = new HttpPost(uri);
+			((HttpPost)request).setEntity(entity);
 		}
 		else if(method == "PUT")
 		{
-			HttpPut put = new HttpPut(uri);
-			put.setEntity(entity);
-			return put;
+			request = new HttpPut(uri);
+			((HttpPut)request).setEntity(entity);
 		}
-		else
-		{
-			HttpGet get = new HttpGet(uri);
-			return get;
-		}
+
+		return request;
 	}
 	
-	protected Object processResponse(HttpResponse response) throws IllegalStateException, IOException
+	protected String processResponse(HttpResponse response) throws IllegalStateException, IOException
 	{
 		String result = null;			
 		HttpEntity entity = response.getEntity();
@@ -100,43 +94,53 @@ public class HttpClient extends DefaultHttpClient {
 	
 	protected String request(String method, String uri, HttpEntity data) throws ClientProtocolException, IOException
 	{
-		String responseString = null;
-		int timeoutConnection = 3000;
-		int timeoutSocket = 5000;
-		
 		HttpRequest request = prepareRequest(method, uri, data);
-		HttpParams httpParameters = new BasicHttpParams();
-		//HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
-		//HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);		
-		setParams(httpParameters);
-
+		
+		// TODO: Remove this debug stuff
+		System.out.println(String.format("%s: %s", method, uri));
+		if(data != null)
+		{
+			System.out.println("DATA:");
+			data.writeTo(System.out);
+			System.out.println();
+		}
+		for(Header h : request.getAllHeaders())
+		{
+			System.out.println(String.format("HEADER: %s = %s", h.getName(), h.getValue()));
+		}
+		for(Cookie c : this.getCookieStore().getCookies())
+		{
+			System.out.println(String.format("COOKIE: %s = %s", c.getName(), c.getValue()));
+		}
 		HttpResponse response = execute(_targetHost, request, _localContext);
+		
+		/*
+		AuthState targetAuthState = (AuthState) _localContext.getAttribute(ClientContext.TARGET_AUTH_STATE);
+		System.out.println("Target auth state: " + targetAuthState.getState());
+		System.out.println("Target auth scheme: " + targetAuthState.getAuthScheme());
+		System.out.println("Target auth credentials: " + targetAuthState.getCredentials());
+		*/
+
 		StatusLine s = response.getStatusLine();
 		if(s.getStatusCode() == 200)
 		{
-			responseString = (String)processResponse(response);
+			return (String)processResponse(response);
 		} else {
-			responseString = s.getReasonPhrase();
 			throw new HttpResponseException(s.getStatusCode(), s.toString());
 		}
-		return responseString;
 	}
 	
 	
 	public String GET(String uri) throws ClientProtocolException, IOException {
-		System.out.println(String.format("GET: %s", uri));
 		return request("GET", uri, null);
 	}
 	
 	public String POST(String uri, HttpEntity data) throws ClientProtocolException, IOException
 	{
-		System.out.println(String.format("POST: %s \r\nDATA: %s", uri, data));
-		data.writeTo(System.out);
 		return request("POST", uri, data);
 	}
 	public String PUT(String uri, HttpEntity data) throws ClientProtocolException, IOException
 	{
-		System.out.println(String.format("PUT: %s \r\nDATA: %s", uri, data));
 		return request("PUT", uri, data);
 	}
 	
@@ -158,13 +162,4 @@ public class HttpClient extends DefaultHttpClient {
 		}
 		return sb.toString();
 	}
-
-	public void setProxy() throws IOException
-	{
-		Properties sysProperties = System.getProperties();
-		sysProperties.put("proxyHost", "<Proxy IP Address>");
-		sysProperties.put("proxyPort", "<Proxy Port Number>");
-		System.setProperties(sysProperties);
-	}
-	
 }

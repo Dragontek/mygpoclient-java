@@ -1,19 +1,16 @@
 package com.dragontek.mygpoclient.api;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.dragontek.mygpoclient.simple.SimpleClient;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 /**
  *	This is the API client that implements both the Simple and
@@ -26,7 +23,6 @@ import com.dragontek.mygpoclient.simple.SimpleClient;
  */
 public class MygPodderClient extends SimpleClient
 {
-
 	/**
 	 * This is the API client that implements both the Simple and
 	 * Advanced API of gpodder.net. See the {@link SimpleClient} class
@@ -39,11 +35,11 @@ public class MygPodderClient extends SimpleClient
 	}
 
 	public List<String> getSubscriptions(PodcastDevice device) throws ClientProtocolException, IOException {
-		return super.getSubscriptions(device.deviceId);
+		return super.getSubscriptions(device.id);
 	}
 	
 	public boolean putSubscriptions(PodcastDevice device, List<String> urls) throws ClientProtocolException, IOException {
-		return super.putSubscriptions(device.deviceId, urls);
+		return super.putSubscriptions(device.id, urls);
 	}
 
 	
@@ -63,49 +59,16 @@ public class MygPodderClient extends SimpleClient
 	 * @return a {@link UpdateResult} object that contains a list of (sanitized)
      * URLs and a "since" value that can be used for future calls to
      * {@link pullSubscriptions}.
+	 * @throws JsonSyntaxException 
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public UpdateResult updateSubscriptions(String deviceId, List<String> addUrls, List<String> removeUrls) throws ClientProtocolException, IOException
+	public UpdateResult updateSubscriptions(String deviceId, List<String> add, List<String> remove) throws JsonSyntaxException, ClientProtocolException, IOException
 	{
 		String uri = locator.addRemoveSubscriptionsUri(deviceId);
-		JSONObject json = new JSONObject();
-		try {
-			if(addUrls != null)
-				json.putOpt("add", new JSONArray(addUrls));
-			if(removeUrls != null)
-				json.putOpt("remove", new JSONArray(removeUrls));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		StringEntity data = null;
-		try {
-			data = new StringEntity(json.toString());
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String response = client.POST(uri, data);
-
-		Map<String, String> updateUrls = new HashMap<String, String>();
-		long timestamp = 0;
-		
-		System.out.println(String.format("RESPONSE:\r\n%s", response));
-		try {
-			JSONObject updates = new JSONObject(response);
-			JSONArray urls = updates.getJSONArray("update_urls");
-			for(int i=0; i < urls.length(); i++)
-			{
-				JSONArray url = urls.getJSONArray(i);
-				updateUrls.put(url.getString(0), url.getString(1));
-			}
-			timestamp = updates.getLong("timestamp");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new UpdateResult(updateUrls, timestamp);
+		SubscriptionChanges changes = new SubscriptionChanges(add, remove);
+		StringEntity data = new StringEntity(_gson.toJson(changes));
+		return _gson.fromJson(client.POST(uri, data), UpdateResult.class);
 	}
 	
 	/**
@@ -120,24 +83,10 @@ public class MygPodderClient extends SimpleClient
 	 * @throws JSONException 
 	 * @throws ClientProtocolException 
 	 */
-	public SubscriptionChanges pullSubscriptions(String deviceId, long since) throws ClientProtocolException, JSONException, IOException
+	public SubscriptionChanges pullSubscriptions(String deviceId, long since) throws ClientProtocolException, IOException
 	{
 		String uri = locator.subscriptionUpdatesUri(deviceId, since);
-		List<String> addList = new ArrayList<String>();
-		List<String> removeList = new ArrayList<String>();
-		JSONObject json = new JSONObject(client.GET(uri));
-		JSONArray addUrls = json.optJSONArray("add");
-		for(int i=0; i < addUrls.length(); i++)
-		{
-			addList.add(addUrls.optString(i));
-		}
-		JSONArray removeUrls = json.optJSONArray("remove");
-		for(int i=0; i < removeUrls.length(); i++)
-		{
-			removeList.add(removeUrls.optString(i));
-		}
-		since = json.optLong("timestamp");
-		return new SubscriptionChanges(addList, removeList, since);
+		return _gson.fromJson(client.GET(uri), SubscriptionChanges.class);
 	}
 	
     /**
@@ -150,46 +99,10 @@ public class MygPodderClient extends SimpleClient
 	public long uploadEpisodeActions(List<EpisodeAction> actions) throws ClientProtocolException, IOException
 	{
 		String uri = locator.uploadEpisodeActionsUri();
-		// TODO: Change to List<NameValuePair> and UrlEncoded
-		//System.out.println( new JSONObject(actions) );
-		JSONArray array = new JSONArray();
-		for(EpisodeAction action : actions)
-		{
-			JSONObject json = new JSONObject();
-			try {
-				json.put("podcast", action.podcast);
-				json.put("episode", action.episode);
-				json.put("action", action.action);
-				json.putOpt("device", action.deviceId);
-				json.putOpt("position", action.position);
-				json.putOpt("started", action.started);
-				json.putOpt("total", action.total);
-				json.putOpt("timestamp", action.timestamp);
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			array.put(json);
-		}
-		StringEntity data = null;
-		try {
-			data = new StringEntity(array.toString());
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		StringEntity data = new StringEntity(_gson.toJson(actions));
 		String response = client.POST(uri, data);
-
-		System.out.println(String.format("RESPONSE:\r\n%s", response));
-		try {
-			JSONObject jsonResponse = new JSONObject(response);
-			return jsonResponse.getLong("timestamp");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return 0L;
-		}
-		
+		// TODO: Parse timestamp from response
+		return 0L;
 	}
 	
 	/**
@@ -206,32 +119,8 @@ public class MygPodderClient extends SimpleClient
 	 */
 	public EpisodeActionChanges downloadEpisodeActions(long since, String podcast, String deviceId) throws ClientProtocolException, IOException
 	{
-		List<EpisodeAction> list = new ArrayList<EpisodeAction>();
 		String uri = locator.downloadEpisodeActionsUri(since, podcast, deviceId);
-			
-		try {
-			JSONObject json = new JSONObject(client.GET(uri));
-			JSONArray actions = json.optJSONArray("actions");
-			for(int i=0; i < actions.length(); i++)
-			{
-				JSONObject action = actions.optJSONObject(i);
-				list.add(
-						new EpisodeAction(
-								action.optString("podcast"), 
-								action.optString("episode"), 
-								action.optString("action"), 
-								action.optString("device"), 
-								action.optString("timestamp"), 
-								action.optInt("started"), 
-								action.optInt("position"), 
-								action.optInt("total"))
-						);
-			}
-			since = json.optLong("timestamp");
-		} catch (JSONException jex) {
-			jex.printStackTrace();
-		}
-		return new EpisodeActionChanges(list, since);
+		return _gson.fromJson(client.GET(uri), EpisodeActionChanges.class);
 	}
 	public EpisodeActionChanges downloadEpisodeActions(long since, String deviceId) throws ClientProtocolException, IOException
 	{
@@ -258,21 +147,8 @@ public class MygPodderClient extends SimpleClient
 	public boolean updateDeviceSettings(String deviceId, String caption, String type) throws ClientProtocolException, IOException
 	{
 		String uri = locator.deviceSettingsUri(deviceId);
-		JSONObject json = new JSONObject();
-		try {
-			json.putOpt("caption", caption);
-			json.putOpt("type", type);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		StringEntity data = null;
-		try {
-			data = new StringEntity(json.toString());
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		PodcastDevice device = new PodcastDevice(deviceId, caption, type);
+		StringEntity data = new StringEntity( _gson.toJson(device), "UTF-8");
 		String response = client.POST(uri, data);
 		return response.equals("");
 	}
@@ -291,17 +167,7 @@ public class MygPodderClient extends SimpleClient
 	public List<PodcastDevice> getDevices() throws ClientProtocolException, IOException
 	{
 		String uri = locator.deviceListUri();
-		List<PodcastDevice> list = new ArrayList<PodcastDevice>();
-		try {
-			JSONArray devices = new JSONArray(client.GET(uri));
-			for(int i=0; i < devices.length(); i++)
-			{
-				JSONObject device = devices.optJSONObject(i);
-				list.add(new PodcastDevice(device.optString("id"), device.optString("caption"), device.optString("type"), device.optInt("subscriptions")));
-			}
-		} catch (JSONException jex) {
-			jex.printStackTrace();
-		}
-		return list;
+		Type collectionType = new TypeToken<ArrayList<PodcastDevice>>(){}.getType();
+		return _gson.fromJson(client.GET(uri), collectionType);
 	}
 }

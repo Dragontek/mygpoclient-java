@@ -1,8 +1,6 @@
 package com.dragontek.mygpoclient.api;
 
-import java.security.InvalidParameterException;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class encapsulates an episode action
@@ -18,7 +16,7 @@ public class EpisodeAction {
 	/** One of 'download', 'play', 'delete' or 'new' */
 	public String action;
 	/** The device_id on which the action has taken place */
-	public String deviceId;
+	public String device;
 	/** When the action took place (in XML time format) */
 	public String timestamp;
 	/** The start time of a play event in seconds */
@@ -30,7 +28,7 @@ public class EpisodeAction {
 
 	public static String[] VALID_ACTIONS =  new String[] { "download", "play", "delete", "new" };
 
-	public EpisodeAction(String podcast, String episode, String action, String deviceId, String timestamp, Integer started, Integer position, Integer total)
+	public EpisodeAction(String podcast, String episode, String action, String device, String timestamp, Integer started, Integer position, Integer total)
 	{
         // Check if the action is valid
 		if(!Arrays.asList(VALID_ACTIONS).contains(action))
@@ -61,7 +59,7 @@ public class EpisodeAction {
         this.podcast = podcast;
         this.episode = episode;
         this.action = action;
-        this.deviceId = deviceId;
+        this.device = device;
         this.timestamp = timestamp;
         this.started = started;
         this.position = position;
