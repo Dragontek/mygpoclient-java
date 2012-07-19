@@ -50,17 +50,17 @@
 
         <p>If you plan to use Eclipse for development, you can create an Eclipse project with Maven:</p>
         <pre><code>$ git clone https://github.com/Dragontek/mygpoclient-java.git
-            $ cd mygpoclient-java/mygpoclient-java
-            $ mvn eclipse:eclipse</code></pre>
+$ cd mygpoclient-java/mygpoclient-java
+$ mvn eclipse:eclipse</code></pre>
         
         <p>To generate javadocs with Maven. From that same directory:</p>
         <pre><code>$ mvn javadoc:javadoc
-            $ ls target/site/apidocs/</code></pre>
+$ ls target/site/apidocs/</code></pre>
         
         <p>To run the tests, you'll need to create a <code>client.properties</code> file in the root folder of the project with <code>username</code>, <code>password</code> and <code>deviceId</code> values in it.</p>
         <p>WARNING: These tests will connect to the gPodder.net service, please don't abuse.</p>
         <pre><code>$ vi client.properties
-            $ mvn test</code></pre>
+$ mvn test</code></pre>
         <p>NOTE: The client.properties file is in the .gitignore file so that it doesn't get pushed to the repository!</p>
         
         <h3>Authors and Contributors</h3>
