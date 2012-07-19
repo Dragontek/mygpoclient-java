@@ -34,7 +34,7 @@
         <h3>Introduction</h3>
 
         <p>mygpoclient-java is my attempt to port the Python <a href="http://thp.io/2010/mygpoclient/">mygpoclient</a> to Java.  I've tried to stay as close to the original Python source as possible where I could so that developers that are comfortable with the Python version will be at home.</p>
-        <p>The <a href="http://gpodder.net">gpodder.net</a> web service provides a way to manage podcasts and keep them synchronized across multiple devices.  It is used in the <a href="http://gpodder.org">gPodder desktop client</a>.</p>
+        <p>The <a href="http://gpodder.net">gPodder.net</a> web service provides a way to manage podcasts and keep them synchronized across multiple devices.  It is used in the <a href="http://gpodder.org">gPodder desktop client</a>.</p>
         <p>This project to port to Java is in support of my <a href="http://www.dragontek.com">Podder client for Android</a>.</p>
         
         <h3>Recent Milestones</h3>
@@ -48,12 +48,31 @@
         <h3>Quick Start</h3>
         <p>This project uses <a href="http://maven.apache.org/">Maven</a> to manage dependencies and the build process.</p>
 
-        <ol>
-          <li>Create Eclipse project with Maven <pre><code>$ mvn eclipse:eclipse</code></pre></li>
-          <li>Create <code>client.properties</code> file in the root folder of the project with <code>username</code>, <code>password</code> and <code>deviceId</code> values in it.</li>
-          <li>Run tests <pre><code>$ mvn test</code></pre></li>
-        </ol>
+        <p>If you plan to use Eclipse for development, you can create an Eclipse project with Maven:</p>
+        <pre>
+          <code>
+            $ git clone https://github.com/Dragontek/mygpoclient-java.git
+            $ cd mygpoclient-java/mygpoclient-java
+            $ mvn eclipse:eclipse
+          </code>
+        </pre>
         
+        <p>To generate javadocs with Maven. From that same directory:</p>
+        <pre>
+          <code>
+            $ mvn javadoc:javadoc
+            $ ls target/site/apidocs/
+          </code>
+        </pre>
+        
+        <p>To run the tests, you'll need to create a <code>client.properties</code> file in the root folder of the project with <code>username</code>, <code>password</code> and <code>deviceId</code> values in it.</p>
+        <p>WARNING: These tests will connect to the gPodder.net service, please don't abuse.</p>
+        <pre>
+          <code>
+            $ vi client.properties
+            $ mvn test
+          </code>
+        </pre>
         <p>NOTE: The client.properties file is in the .gitignore file so that it doesn't get pushed to the repository!</p>
         
         <h3>Authors and Contributors</h3>
