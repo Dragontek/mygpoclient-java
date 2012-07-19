@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.dragontek</groupId>
 	<artifactId>mygpoclient-java</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-STABLE</version>
 	<name>mygpoclient-java</name>
 	<description>Java implementation of mygpoclient.</description>
-	<url>http://mygpoclient-java.github.com</url>
+	<url>http://dragontek.github.com/mygpoclient-java/</url>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
