@@ -35,15 +35,23 @@
 
         <p>mygpoclient-java is my attempt to port the Python <a href="http://thp.io/2010/mygpoclient/">mygpoclient</a> to Java.  I've tried to stay as close to the original Python source as possible where I could so that developers that are comfortable with the Python version will be at home.</p>
         
+        <h3>Recent Milestones</h3>
+        <ul>
+          <li>20120718 - Transitioned to Gson library and removed Json.org dependency.</li>
+          <li>20120713 - FeedService implemented</li>
+        </ul>
+
         <h3>Quick Start</h3>
         <p>This project uses <a href="http://maven.apache.org/">Maven</a> to manage dependencies and the build process.</p>
 
         <ol>
           <li>Clone the git repository <code>git clone https://github.com/Dragontek/mygpoclient-java.git</code></li>
           <li>Create Eclipse project with Maven <code>mvn eclipse:eclipse</code></li>
-          <li>Create client.properties file in the root folder of the project.</li>
+          <li>Create *client.properties* file in the root folder of the project with *username*, *password* and *deviceId* values in it.</li>
           <li>Run tests <code>mvn test</code></li>
         </ol>
+        
+        <p>NOTE: The client.properties file is in the .gitignore file so that it doesn't get pushed to the repository!</p>
         
         <h3>Authors and Contributors</h3>
   
