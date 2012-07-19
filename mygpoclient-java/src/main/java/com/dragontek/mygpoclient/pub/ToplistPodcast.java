@@ -1,8 +1,5 @@
 package com.dragontek.mygpoclient.pub;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Container class for a toplist entry
  * 
@@ -34,20 +31,6 @@ public class ToplistPodcast
 		this.description = description;
 		this.subscribers = subscribers;
 		this.subscribersLastWeek = subscribersLastWeek;
-	}
-	
-	public ToplistPodcast(JSONObject json)
-	{
-		try {
-			this.url = json.getString("url");
-			this.title = json.getString("title");
-			this.description = json.getString("description");
-			this.subscribers = json.getInt("subscribers");
-			this.subscribersLastWeek = json.getInt("subscribersLastWeek");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	@Override

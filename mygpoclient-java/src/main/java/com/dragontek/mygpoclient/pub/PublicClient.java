@@ -1,24 +1,20 @@
 package com.dragontek.mygpoclient.pub;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.reflect.Type;
 
 import org.apache.http.client.ClientProtocolException;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 
 import com.dragontek.mygpoclient.Global;
 import com.dragontek.mygpoclient.Locator;
 import com.dragontek.mygpoclient.json.JsonClient;
 import com.dragontek.mygpoclient.simple.Podcast;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Client for the gpodder.net "anonymous" API
@@ -93,13 +89,7 @@ public class PublicClient
 	 */
 	public List<Podcast> searchPodcast(String query) throws JsonSyntaxException, ClientProtocolException, IOException
 	{
-		String uri = null;
-		try {
-			uri = _locator.searchUri(URLEncoder.encode(query, "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String uri = _locator.searchUri(URLEncoder.encode(query, "UTF-8")); 
 		Type collectionType = new TypeToken<ArrayList<Podcast>>(){}.getType();
 		return _gson.fromJson(_client.GET(uri), collectionType);
 	}
