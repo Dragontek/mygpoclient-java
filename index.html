@@ -63,6 +63,12 @@ $ ls target/site/apidocs/</code></pre>
 $ mvn test</code></pre>
         <p>NOTE: The client.properties file is in the .gitignore file so that it doesn't get pushed to the repository!</p>
         
+        <p>Finally, to package for use in your application:</p>
+        <pre><code>$ mvn package -Dmaven.test.skip=true</code></pre>
+        
+        <p>Or if your project uses maven already, you can install it into your Maven repository:</p>
+        <pre><code>$ mvn install -Dmaven.test.skip=true</code></pre>
+        
         <h3>Authors and Contributors</h3>
   
         <p>Lead Developer - Josh Mondragon <a href="https://github.com/jmondragon" class="user-mention">@jmondragon</a>.</p>
