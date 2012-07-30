@@ -1,10 +1,12 @@
 package com.dragontek.mygpoclient;
 
+import org.apache.http.HttpHost;
+
 public class Locator {
 	String _username;
 	String _simpleBase;
 	String _base;
-	
+	HttpHost _targetHost;
 
 	public Locator(String username)
 	{
@@ -18,10 +20,28 @@ public class Locator {
 	public Locator(String username, String host, int version)
 	{
 		this._username = username;
-		this._simpleBase = String.format("http://%s", host);
-		this._base = String.format("http://%s/api/%s", host, version);
+		this._targetHost = new HttpHost(host, 443, "https");
+		
+		this._simpleBase = _targetHost.toURI();
+		this._base = String.format("%s/api/%s", _simpleBase, version);
+		
 	}
 	
+	public String clientConfigUri()
+	{
+		return Util.join(new String[] { this._simpleBase, "clientconfig.json" });
+	}
+	
+	public String loginUri()
+	{
+		// Use SSL on this one!
+		return Util.join(new String[] { this._base, "auth", _username, "login.json" } );
+	}
+	
+	public String logoutUri()
+	{
+		return Util.join(new String[] { this._base, "auth", _username, "logout.json" } );
+	}
 	public String subscriptionsUri(String deviceId)
 	{
 		return subscriptionsUri(deviceId, "json");
