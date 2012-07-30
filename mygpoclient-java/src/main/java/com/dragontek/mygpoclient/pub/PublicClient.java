@@ -99,4 +99,10 @@ public class PublicClient
 		String uri = _locator.getPodcastDataUri(url);
 		return _gson.fromJson(_client.GET(uri), Podcast.class);
 	}
+	
+	public ClientConfig getConfiguration() throws JsonSyntaxException, ClientProtocolException, IOException
+	{
+		String uri = _locator.clientConfigUri();
+		return _gson.fromJson(_client.GET(uri), ClientConfig.class);
+	}
 }
