@@ -33,7 +33,10 @@ public class MygPodderClient extends SimpleClient
 	public MygPodderClient(String username, String password) {
 		super(username, password);
 	}
-
+	public MygPodderClient(String username) {
+		super(username);
+	}
+	
 	public List<String> getSubscriptions(PodcastDevice device) throws ClientProtocolException, IOException {
 		return super.getSubscriptions(device.id);
 	}
@@ -65,10 +68,10 @@ public class MygPodderClient extends SimpleClient
 	 */
 	public UpdateResult updateSubscriptions(String deviceId, List<String> add, List<String> remove) throws JsonSyntaxException, ClientProtocolException, IOException
 	{
-		String uri = locator.addRemoveSubscriptionsUri(deviceId);
+		String uri = _locator.addRemoveSubscriptionsUri(deviceId);
 		SubscriptionChanges changes = new SubscriptionChanges(add, remove);
 		StringEntity data = new StringEntity(_gson.toJson(changes));
-		return _gson.fromJson(client.POST(uri, data), UpdateResult.class);
+		return _gson.fromJson(_client.POST(uri, data), UpdateResult.class);
 	}
 	
 	/**
@@ -85,8 +88,8 @@ public class MygPodderClient extends SimpleClient
 	 */
 	public SubscriptionChanges pullSubscriptions(String deviceId, long since) throws ClientProtocolException, IOException
 	{
-		String uri = locator.subscriptionUpdatesUri(deviceId, since);
-		return _gson.fromJson(client.GET(uri), SubscriptionChanges.class);
+		String uri = _locator.subscriptionUpdatesUri(deviceId, since);
+		return _gson.fromJson(_client.GET(uri), SubscriptionChanges.class);
 	}
 	
     /**
@@ -98,9 +101,9 @@ public class MygPodderClient extends SimpleClient
      */
 	public long uploadEpisodeActions(List<EpisodeAction> actions) throws ClientProtocolException, IOException
 	{
-		String uri = locator.uploadEpisodeActionsUri();
+		String uri = _locator.uploadEpisodeActionsUri();
 		StringEntity data = new StringEntity(_gson.toJson(actions));
-		String response = client.POST(uri, data);
+		String response = _client.POST(uri, data);
 		// TODO: Parse timestamp from response
 		return 0L;
 	}
@@ -119,8 +122,8 @@ public class MygPodderClient extends SimpleClient
 	 */
 	public EpisodeActionChanges downloadEpisodeActions(long since, String podcast, String deviceId) throws ClientProtocolException, IOException
 	{
-		String uri = locator.downloadEpisodeActionsUri(since, podcast, deviceId);
-		return _gson.fromJson(client.GET(uri), EpisodeActionChanges.class);
+		String uri = _locator.downloadEpisodeActionsUri(since, podcast, deviceId);
+		return _gson.fromJson(_client.GET(uri), EpisodeActionChanges.class);
 	}
 	public EpisodeActionChanges downloadEpisodeActions(long since, String deviceId) throws ClientProtocolException, IOException
 	{
@@ -146,10 +149,10 @@ public class MygPodderClient extends SimpleClient
      */
 	public boolean updateDeviceSettings(String deviceId, String caption, String type) throws ClientProtocolException, IOException
 	{
-		String uri = locator.deviceSettingsUri(deviceId);
+		String uri = _locator.deviceSettingsUri(deviceId);
 		PodcastDevice device = new PodcastDevice(deviceId, caption, type);
 		StringEntity data = new StringEntity( _gson.toJson(device), "UTF-8");
-		String response = client.POST(uri, data);
+		String response = _client.POST(uri, data);
 		return response.equals("");
 	}
 	
@@ -166,8 +169,8 @@ public class MygPodderClient extends SimpleClient
 	 */
 	public List<PodcastDevice> getDevices() throws ClientProtocolException, IOException
 	{
-		String uri = locator.deviceListUri();
+		String uri = _locator.deviceListUri();
 		Type collectionType = new TypeToken<ArrayList<PodcastDevice>>(){}.getType();
-		return _gson.fromJson(client.GET(uri), collectionType);
+		return _gson.fromJson(_client.GET(uri), collectionType);
 	}
 }
