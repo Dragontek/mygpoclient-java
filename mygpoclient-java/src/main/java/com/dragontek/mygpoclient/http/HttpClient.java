@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -15,7 +17,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
@@ -23,9 +24,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
 
 import com.dragontek.mygpoclient.Global;
 
@@ -33,6 +32,7 @@ public class HttpClient extends DefaultHttpClient {
 	
 	HttpHost _targetHost;
 	//BasicHttpContext _localContext = new BasicHttpContext();
+	protected String _authToken;
 	
 	public HttpClient()
 	{
@@ -48,12 +48,14 @@ public class HttpClient extends DefaultHttpClient {
 	}
 	public HttpClient(String username, String password, String host)
 	{
-		this(username, password, host, 80); // Default to http port!
+		this(username, password, host, false);
 	}
-	
-	public HttpClient(String username, String password, String host, int port)
+	public HttpClient(String username, String password, String host, boolean ssl)
 	{
-		_targetHost = new HttpHost(host, port);
+		if(ssl)
+			_targetHost = new HttpHost(host, 443, "https");
+		else
+			_targetHost = new HttpHost(host);
 		
 		if(username != null && password!= null)
 			getCredentialsProvider().setCredentials(new AuthScope(_targetHost.getHostName(), _targetHost.getPort()), new UsernamePasswordCredentials(username, password));
@@ -63,7 +65,11 @@ public class HttpClient extends DefaultHttpClient {
 	{
 		
 		HttpRequest request = new HttpGet(uri);
-
+		if(_authToken != null)
+		{
+			// TODO: Set-Cookie?
+			//request.set
+		}
 		if(method == "POST")
 		{
 			request = new HttpPost(uri);
@@ -91,35 +97,48 @@ public class HttpClient extends DefaultHttpClient {
 		return result;
 	}
 	
+	public String getAuthToken()
+	{
+		return this._authToken;
+	}
+	public void setAuthToken(String token)
+	{
+		this._authToken = token;
+	}
+	
 	protected String request(String method, String uri, HttpEntity data) throws ClientProtocolException, IOException
 	{
 		HttpRequest request = prepareRequest(method, uri, data);
-		
-		// TODO: Remove this debug stuff
-		System.out.println(String.format("%s: %s", method, uri));
-		if(data != null)
-		{
-			System.out.println("DATA:");
-			data.writeTo(System.out);
-			System.out.println();
-		}
-		for(Header h : request.getAllHeaders())
-		{
-			System.out.println(String.format("HEADER: %s: %s", h.getName(), h.getValue()));
-		}
-		for(Cookie c : this.getCookieStore().getCookies())
-		{
-			System.out.println(String.format("COOKIE: %s: %s", c.getName(), c.getValue()));
-		}
-		System.out.println(_targetHost);
 		HttpResponse response = execute(_targetHost, request);
-		System.out.println(response.getStatusLine());
-		/*
-		AuthState targetAuthState = (AuthState) _localContext.getAttribute(ClientContext.TARGET_AUTH_STATE);
-		System.out.println("Target auth state: " + targetAuthState.getState());
-		System.out.println("Target auth scheme: " + targetAuthState.getAuthScheme());
-		System.out.println("Target auth credentials: " + targetAuthState.getCredentials());
-		*/
+		URL url = new URL(uri);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.connect();
+		
+		if(Global.DEBUG)
+		{
+			System.out.println("HOST: " + _targetHost);
+			System.out.println(String.format("%s: %s", method, uri));
+			if(data != null)
+			{
+				System.out.println("DATA:");
+				data.writeTo(System.out);
+				System.out.println();
+			}
+			for(Header h : request.getAllHeaders())
+			{
+				System.out.println(String.format("HEADER: %s: %s", h.getName(), h.getValue()));
+			}
+			for(Cookie c : this.getCookieStore().getCookies())
+			{
+				if(c.getName().equals("sessionid"));
+					_authToken = c.getValue();
+					
+				System.out.println(String.format("COOKIE: %s: %s -- %s", c.getName(), c.getValue(), c.getDomain()));
+				
+			}
+			System.out.println(response.getStatusLine());
+			//System.out.println(response);
+		}
 
 		StatusLine s = response.getStatusLine();
 		if(s.getStatusCode() == 200)

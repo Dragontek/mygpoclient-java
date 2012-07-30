@@ -23,7 +23,7 @@ public class JsonClient extends HttpClient {
 	{
 		super(username, password, host);
 	}
-	
+
 	@Override
 	protected HttpRequest prepareRequest(String method, String uri, HttpEntity data) throws UnsupportedEncodingException {
 		HttpRequest request = super.prepareRequest(method, uri, data);
