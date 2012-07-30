@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.dragontek.mygpoclient.pub.ClientConfig;
 import com.dragontek.mygpoclient.pub.PublicClient;
 import com.dragontek.mygpoclient.pub.ToplistPodcast;
 import com.dragontek.mygpoclient.simple.Podcast;
@@ -21,11 +22,26 @@ public class PublicClientTest extends TestCase {
 	}
 	
 	@Test
+	public void testGetClientConfig() throws Exception {
+		ClientConfig config = client.getConfiguration();
+		assertNotNull(config);
+		assertNotNull(config.mygpo);
+		assertNotNull(config.mygpo_feedservice);
+		
+		System.out.println( config.mygpo.get("baseurl") );
+		System.out.println( config.mygpo_feedservice.get("baseurl"));
+		System.out.println( config.update_timeout );
+		
+		
+	}
+	
+	@Test
 	public void testGetTopList() throws Exception {
 		
 		List<ToplistPodcast> podcasts = client.getToplist();
 		assertNotNull(podcasts); // new ArrayList() is never null!
 		assertEquals(25, podcasts.size());
+		
 		for(ToplistPodcast podcast : podcasts)
 		{
 			System.out.println(podcast.url);
@@ -35,6 +51,7 @@ public class PublicClientTest extends TestCase {
 	
 	@Test
 	public void testSearchPodcast() throws Exception {
+		
 		List<Podcast> podcasts = client.searchPodcast("Linux");
 		assertNotNull(podcasts);
 		for(Podcast podcast : podcasts)
