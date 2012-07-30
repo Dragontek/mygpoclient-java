@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.dragontek</groupId>
 	<artifactId>mygpoclient-java</artifactId>
-	<version>0.1.0-STABLE</version>
+	<version>0.1.1-STABLE</version>
 	<name>mygpoclient-java</name>
 	<description>Java implementation of mygpoclient.</description>
 	<url>http://dragontek.github.com/mygpoclient-java/</url>
@@ -18,13 +18,14 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.2.1</version>
+			<version>2.2.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
