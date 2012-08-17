@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.*;
+import org.apache.http.client.methods.HttpUriRequest;
 
 import com.dragontek.mygpoclient.http.HttpClient;
 import com.google.gson.Gson;
@@ -14,21 +15,15 @@ public class JsonClient extends HttpClient {
 	{
 		super();
 	}
-	public JsonClient(String host)
+	public JsonClient(String username, String password)
 	{
-		super(host);
-	}
-	
-	public JsonClient(String username, String password, String host)
-	{
-		super(username, password, host);
+		super(username, password);
 	}
 
 	@Override
-	protected HttpRequest prepareRequest(String method, String uri, HttpEntity data) throws UnsupportedEncodingException {
-		HttpRequest request = super.prepareRequest(method, uri, data);
+	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity data) throws UnsupportedEncodingException {
+		HttpUriRequest request = super.prepareRequest(method, uri, data);
 		request.addHeader("Accept", "application/json");
-		
 		return request;
 	}
 

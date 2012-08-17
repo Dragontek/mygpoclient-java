@@ -35,23 +35,24 @@ public class PublicClient
 	
 	/**
 	 * Creates a new Public API client
+	 */
+	public PublicClient()
+	{
+		this(Global.HOST);
+	}
+
+	/**
+	 * Creates a new Public API client
 	 * 
 	 * @param host hostname of the webservice (gpodder.net)
 	 */
 	public PublicClient(String host)
 	{
 		this._locator = new Locator(host);
-		this._client = new JsonClient(host);
+		this._client = new JsonClient();
 		this._gson = new Gson();
 	}
 	
-	/**
-	 * Creates a new Public API client
-	 */
-	public PublicClient()
-	{
-		this(Global.HOST);
-	}
 	
 	/**
 	 * Get a list of most-subscribed podcasts

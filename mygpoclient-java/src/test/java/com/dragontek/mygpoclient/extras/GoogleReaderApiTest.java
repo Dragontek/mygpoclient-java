@@ -1,4 +1,4 @@
-package com.dragontek.mygpoclient;
+package com.dragontek.mygpoclient.extras;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,10 +7,10 @@ import java.util.List;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 
+import com.dragontek.mygpoclient.extras.GoogleReaderAPI;
+import com.dragontek.mygpoclient.extras.iTunesSearchApi;
 import com.dragontek.mygpoclient.feeds.FeedServiceClient;
 import com.dragontek.mygpoclient.feeds.FeedServiceResponse;
-import com.dragontek.mygpoclient.feeds.GoogleReaderAPI;
-import com.dragontek.mygpoclient.pub.iTunesSearchApi;
 import com.dragontek.mygpoclient.simple.Podcast;
 
 import junit.framework.TestCase;

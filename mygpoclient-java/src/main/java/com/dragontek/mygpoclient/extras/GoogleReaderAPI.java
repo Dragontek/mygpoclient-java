@@ -1,4 +1,4 @@
-package com.dragontek.mygpoclient.feeds;
+package com.dragontek.mygpoclient.extras;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

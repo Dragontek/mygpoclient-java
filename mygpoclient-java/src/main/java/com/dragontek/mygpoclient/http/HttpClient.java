@@ -10,66 +10,43 @@ import java.net.URL;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.dragontek.mygpoclient.Global;
 
 public class HttpClient extends DefaultHttpClient {
-	
-	HttpHost _targetHost;
-	//BasicHttpContext _localContext = new BasicHttpContext();
-	protected String _authToken;
+		
+	private String _authToken;
+	private String _username = null;
+	private String _password = null;
 	
 	public HttpClient()
 	{
-		this(null, null, Global.HOST);
-	}
-	public HttpClient(String host)
-	{
-		this(null, null, host);
-	}
-	public HttpClient(String username, String password)
-	{
-		this(username, password, Global.HOST);
-	}
-	public HttpClient(String username, String password, String host)
-	{
-		this(username, password, host, false);
-	}
-	public HttpClient(String username, String password, String host, boolean ssl)
-	{
-		if(ssl)
-			_targetHost = new HttpHost(host, 443, "https");
-		else
-			_targetHost = new HttpHost(host);
-		
-		if(username != null && password!= null)
-			getCredentialsProvider().setCredentials(new AuthScope(_targetHost.getHostName(), _targetHost.getPort()), new UsernamePasswordCredentials(username, password));
 	}
 	
-	protected HttpRequest prepareRequest(String method, String uri, HttpEntity entity) throws UnsupportedEncodingException
+	public HttpClient(String username, String password)
 	{
-		
-		HttpRequest request = new HttpGet(uri);
-		if(_authToken != null)
-		{
-			// TODO: Set-Cookie?
-			//request.set
-		}
+		this._username = username;
+		this._password = password;
+	}
+	
+	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity entity) throws UnsupportedEncodingException
+	{
+
+		HttpUriRequest request = new HttpGet(uri);
+
 		if(method == "POST")
 		{
 			request = new HttpPost(uri);
@@ -80,6 +57,21 @@ public class HttpClient extends DefaultHttpClient {
 			request = new HttpPut(uri);
 			((HttpPut)request).setEntity(entity);
 		}
+
+		if(_authToken != null)
+		{
+			// TODO: Set-Cookie?
+			//request.set
+		}
+
+		// Authentication
+		if(_username != null && _password!= null)
+		{
+			Credentials creds = new UsernamePasswordCredentials(_username, _password);
+			AuthScope scope = new AuthScope(request.getURI().getHost(), request.getURI().getPort());
+			getCredentialsProvider().setCredentials(scope, creds);
+		}
+		
 		request.addHeader("User-Agent", Global.USER_AGENT);
 		return request;
 	}
@@ -108,15 +100,11 @@ public class HttpClient extends DefaultHttpClient {
 	
 	protected String request(String method, String uri, HttpEntity data) throws ClientProtocolException, IOException
 	{
-		HttpRequest request = prepareRequest(method, uri, data);
-		HttpResponse response = execute(_targetHost, request);
-		URL url = new URL(uri);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.connect();
+		HttpUriRequest request = prepareRequest(method, uri, data);
+		HttpResponse response = execute(request);
 		
 		if(Global.DEBUG)
 		{
-			System.out.println("HOST: " + _targetHost);
 			System.out.println(String.format("%s: %s", method, uri));
 			if(data != null)
 			{
