@@ -44,9 +44,9 @@ public class HttpClient extends DefaultHttpClient {
 	
 	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity entity) throws UnsupportedEncodingException
 	{
-
+		//TODO: add params to uri if it's a GET instead of a post
 		HttpUriRequest request = new HttpGet(uri);
-
+		
 		if(method == "POST")
 		{
 			request = new HttpPost(uri);
@@ -72,7 +72,7 @@ public class HttpClient extends DefaultHttpClient {
 			getCredentialsProvider().setCredentials(scope, creds);
 		}
 		
-		request.addHeader("User-Agent", Global.USER_AGENT);
+		//request.addHeader("User-Agent", Global.USER_AGENT);
 		return request;
 	}
 	
@@ -141,6 +141,9 @@ public class HttpClient extends DefaultHttpClient {
 	
 	public String GET(String uri) throws ClientProtocolException, IOException {
 		return request("GET", uri, null);
+	}
+	public String GET(String uri, HttpEntity data) throws ClientProtocolException, IOException {
+		return request("GET", uri, data);
 	}
 	
 	public String POST(String uri, HttpEntity data) throws ClientProtocolException, IOException
