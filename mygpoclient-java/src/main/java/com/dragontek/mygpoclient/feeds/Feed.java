@@ -32,11 +32,11 @@ public class Feed {
 		public String author;
 		public Long duration;
 		public String language;
-		public List<File> files;
+		public List<Enclosure> files;
 		
-		public class File {
+		public class Enclosure {
 			public String url;
-			public String mime_type;
+			public String mimetype;
 			public Long length;
 		}
 	}
