@@ -1,4 +1,4 @@
-package com.dragontek.mygpoclient;
+package com.dragontek.mygpoclient.simple;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

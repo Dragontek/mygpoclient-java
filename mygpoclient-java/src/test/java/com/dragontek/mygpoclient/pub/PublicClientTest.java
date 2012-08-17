@@ -1,4 +1,4 @@
-package com.dragontek.mygpoclient;
+package com.dragontek.mygpoclient.pub;
 
 import java.util.List;
 
@@ -28,9 +28,9 @@ public class PublicClientTest extends TestCase {
 		assertNotNull(config.mygpo);
 		assertNotNull(config.mygpo_feedservice);
 		
-		System.out.println( config.mygpo.get("baseurl") );
-		System.out.println( config.mygpo_feedservice.get("baseurl"));
-		System.out.println( config.update_timeout );
+		System.out.println( "mygpo: " + config.mygpo.get("baseurl") );
+		System.out.println( "mygpo_feedservice: " +config.mygpo_feedservice.get("baseurl"));
+		System.out.println( "update_timeout: " +config.update_timeout );
 		
 		
 	}
