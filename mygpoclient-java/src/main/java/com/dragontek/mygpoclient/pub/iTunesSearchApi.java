@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import org.apache.http.auth.AuthenticationException;
-
-import com.dragontek.mygpoclient.http.HttpClient;
 import com.dragontek.mygpoclient.json.JsonClient;
 import com.dragontek.mygpoclient.simple.Podcast;
 import com.google.gson.Gson;
