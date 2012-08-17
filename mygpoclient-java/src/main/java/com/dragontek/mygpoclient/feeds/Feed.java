@@ -17,9 +17,9 @@ public class Feed {
 	public String hub;
 	public Dictionary<String, String> errors;
 	public Dictionary<String, String> warnings;
-	public Long http_last_modified;
+	public long http_last_modified;
 	public String http_etag;
-	public List<Episode> episodes;
+	public Episode[] episodes;
 	
 	public class Episode {
 		public String guid;
@@ -28,16 +28,16 @@ public class Feed {
 		public String number;
 		public String description;
 		public String link;
-		public Long released;
+		public long released;
 		public String author;
-		public Long duration;
+		public long duration;
 		public String language;
-		public List<Enclosure> files;
+		public Enclosure[] files;
 		
 		public class Enclosure {
 			public String url;
 			public String mimetype;
-			public Long length;
+			public long filesize;
 		}
 	}
 }
