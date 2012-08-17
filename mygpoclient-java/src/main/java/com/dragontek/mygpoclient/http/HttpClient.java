@@ -72,7 +72,7 @@ public class HttpClient extends DefaultHttpClient {
 			getCredentialsProvider().setCredentials(scope, creds);
 		}
 		
-		//request.addHeader("User-Agent", Global.USER_AGENT);
+		request.addHeader("User-Agent", Global.USER_AGENT);
 		return request;
 	}
 	
