@@ -1,4 +1,4 @@
-package com.dragontek.mygpoclient.pub;
+package com.dragontek.mygpoclient.extras;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -18,7 +18,7 @@ public class iTunesSearchApi {
 	private JsonClient client;
 	public iTunesSearchApi()
 	{
-		client = new JsonClient("itunes.apple.com");
+		client = new JsonClient();
 	}
 	public ArrayList<Podcast> search(String query) throws IOException
 	{
