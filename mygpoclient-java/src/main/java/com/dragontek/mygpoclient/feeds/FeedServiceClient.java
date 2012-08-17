@@ -10,6 +10,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.dragontek.mygpoclient.json.JsonClient;
@@ -18,27 +19,26 @@ import com.google.gson.reflect.TypeToken;
 
 public class FeedServiceClient extends JsonClient {
 
-	private static String BASE_URL="mygpo-feedservice.appspot.com";
-	private String base_url;
-	
+	private static String HOST="http://mygpo-feedservice.appspot.com";
+
 	public FeedServiceClient()
 	{
-		this(BASE_URL);
+		this(HOST);
 	}
 
-	public FeedServiceClient(String base_url){
-		this(base_url, null, null);
+	public FeedServiceClient(String host){
+		this(host, null, null);
 	}
 
-	public FeedServiceClient(String base_url, String username, String password)
+	public FeedServiceClient(String host, String username, String password)
 	{ 
-		super(username, password, base_url);
-		this.base_url = base_url;
+		super(username, password);
+		HOST = host;
 	}
 	
 	@Override
-	public HttpRequest prepareRequest(String method, String uri, HttpEntity data) throws UnsupportedEncodingException {
-		HttpRequest request = super.prepareRequest(method, uri, data);
+	public HttpUriRequest prepareRequest(String method, String uri, HttpEntity data) throws UnsupportedEncodingException {
+		HttpUriRequest request = super.prepareRequest(method, uri, data);
 		//request.addHeader("If-Modified-Since", "");
 		//request.addHeader("Accept", "application/json");
 		request.addHeader("Accept-Encoding", "gzip");
@@ -87,7 +87,7 @@ public class FeedServiceClient extends JsonClient {
 		
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<ArrayList<Feed>>(){}.getType();
-		List<Feed> response = gson.fromJson(this.POST(this.base_url + "/parse" , post_data), collectionType);
+		List<Feed> response = gson.fromJson(this.POST(HOST + "/parse" , post_data), collectionType);
 		
 		return new FeedServiceResponse(response, 0L, feed_urls);
 	}

@@ -6,7 +6,6 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
@@ -73,7 +72,7 @@ public class SimpleClient
 	{
 		this._gson = new Gson();
 		this._locator = new Locator(username, host);
-		this._client = new JsonClient(username, password, host);
+		this._client = new JsonClient(username, password);
 	}
 	
 	public String getAuthToken()
@@ -93,24 +92,23 @@ public class SimpleClient
 	
 	public boolean authenticate(String username, String password) throws ClientProtocolException, IOException, InvalidParameterException
 	{
-		HttpClient tempClient = new HttpClient();
 		
 		if(username != null && password!= null)
-			tempClient.getCredentialsProvider().setCredentials(new AuthScope("gpodder.net", 443), new UsernamePasswordCredentials(username, password));
+		{
+			HttpClient tempClient = new HttpClient(username, password);
+			tempClient.POST(_locator.loginUri(), null);
+			for(Cookie c : tempClient.getCookieStore().getCookies())
+			{
+				if(c.getName().equals("sessionid"));
+					_authToken = c.getValue().toString();
+			}
+			return _authToken != null;
+		}
 		else {
 			throw new InvalidParameterException("Username and Password are required");
 		}
-		
-		tempClient.POST(_locator.loginUri(), null);
-		
-		for(Cookie c : tempClient.getCookieStore().getCookies())
-		{
-			if(c.getName().equals("sessionid"));
-				_authToken = c.getValue().toString();
-		}
-		
-		return _authToken != null;
 	}
+	
 	public List<String> getSubscriptions(String deviceId) throws ClientProtocolException, IOException
 	{
 		String uri = _locator.subscriptionsUri(deviceId);
