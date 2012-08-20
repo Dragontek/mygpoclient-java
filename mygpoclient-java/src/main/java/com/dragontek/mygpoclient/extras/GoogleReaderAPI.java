@@ -12,6 +12,9 @@ import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.dragontek.mygpoclient.feeds.IFeed;
+import com.dragontek.mygpoclient.feeds.IFeed.IEpisode;
+import com.dragontek.mygpoclient.feeds.IFeed.IEpisode.IEnclosure;
 import com.dragontek.mygpoclient.http.HttpClient;
 import com.dragontek.mygpoclient.json.JsonClient;
 import com.google.gson.Gson;
@@ -84,7 +87,7 @@ public class GoogleReaderAPI extends HttpClient {
         POST(BASE_API_URI + "edit-tag", new UrlEncodedFormEntity(nameValuePairs));
 	}
 	
-	public GoogleFeed parse(String url) throws AuthenticationException, IOException
+	public GoogleFeed parse(String url) throws IOException
 	{
 		
 		Gson gson = new Gson();
@@ -155,28 +158,52 @@ public class GoogleReaderAPI extends HttpClient {
 	}
 	
 	
-    public static class GoogleFeed
+    public class GoogleFeed implements IFeed
     {
-        public String id;
-    	public String title;
-        public String description;
-        public List<Alternate> alternate;
-        public List<Item> items;
+        private String id;
+    	private String title;
+        private String description;
+        private Alternate[] alternate;
+        private Item[] items;
+		
+        @Override
+		public String getTitle() {
+			return this.title;
+		}
+		@Override
+		public String getUrl() {
+			return this.id.replace("feed/", "");
+		}
+		@Override
+		public String getDescription() {
+			return this.description;
+		}
+		@Override
+		public String getLink() {
+			return this.alternate[0].href;
+		}
+
+		@Override
+		public IEpisode[] getEpisodes() {
+			return this.items;
+		}
     }
    
    
-    public static class Item
+    public class Item implements IEpisode
     {
-        public String id;
-        public List<Enclosure> enclosure;
-        public List<Alternate> alternate;
-		public String title;
-		public Content content;
-		public Content summary;
-		public String published;
-		public String updated;
-		public String crawlTimeMsec;
-        public List<String> categories;
+        private String id;
+        private Enclosure[] enclosure;
+        private Alternate[] alternate;
+        private String author;
+        private String title;
+        private Content content;
+        private Content summary;
+        private long published;
+        private long updated;
+        private long crawlTimeMsec;
+        private String[] categories;
+
         public boolean isState(String state)
         {
         	for(String category : categories)
@@ -186,14 +213,44 @@ public class GoogleReaderAPI extends HttpClient {
         	}
         	return false;
         }
-        
-        public Enclosure getFirstEnclosure()
-        {
-        	if(enclosure != null && enclosure.size() > 0)
-        		return enclosure.get(0);
-        	else
-        		return null;
-        }
+
+		@Override
+		public String getGuid() {
+			return this.id;
+		}
+
+		@Override
+		public String getTitle() {
+			return this.title;
+		}
+
+		@Override
+		public String getDescription() {
+			if(this.content != null)
+				return this.content.content;
+			else
+				return this.summary.content;
+		}
+
+		@Override
+		public long getReleased() {
+			return this.published;
+		}
+
+		@Override
+		public String getLink() {
+			return this.alternate[0].href;
+		}
+
+		@Override
+		public IEnclosure getEnclosure() {
+			return this.enclosure[0];
+		}
+
+		@Override
+		public String getAuthor() {
+			return this.author;
+		}
     }
     public class Content
     {
@@ -210,10 +267,23 @@ public class GoogleReaderAPI extends HttpClient {
     	public String href;
     	public String type;
     }
-    public class Enclosure
+    public class Enclosure implements IEnclosure
     {
     	public String href;
     	public String type;
-    	public String length;
+    	public long length;
+		
+    	@Override
+		public String getUrl() {
+			return this.href;
+		}
+		@Override
+		public String getMimetype() {
+			return this.type;
+		}
+		@Override
+		public long getFilesize() {
+			return this.length;
+		}
     }
 }
