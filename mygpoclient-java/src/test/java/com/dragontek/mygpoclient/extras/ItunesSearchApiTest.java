@@ -1,21 +1,19 @@
 package com.dragontek.mygpoclient.extras;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 
+import com.dragontek.mygpoclient.IPodcast;
 import com.dragontek.mygpoclient.extras.iTunesSearchApi;
-import com.dragontek.mygpoclient.feeds.FeedServiceClient;
-import com.dragontek.mygpoclient.feeds.FeedServiceResponse;
-import com.dragontek.mygpoclient.simple.Podcast;
 
 import junit.framework.TestCase;
 
-public class ItunesSearchApiTest extends TestCase {
+public class iTunesSearchApiTest extends TestCase {
 	iTunesSearchApi client;
-	public ItunesSearchApiTest(String name) throws ClientProtocolException, IOException
+	public iTunesSearchApiTest(String name) throws ClientProtocolException, IOException
 	{
 		super(name);
 		client = new iTunesSearchApi();
@@ -24,11 +22,10 @@ public class ItunesSearchApiTest extends TestCase {
 	
 	@Test
 	public void testSearch() throws Exception {
-		ArrayList<Podcast> podcasts = client.search("Crime Central");
-		for(Podcast p : podcasts)
+		List<IPodcast> podcasts = client.searchPodcast("Crime Central");
+		for(IPodcast p : podcasts)
 		{
-			System.out.println(p.url);
-			
+			System.out.println(p.getUrl());
 		}
 	}
 	
