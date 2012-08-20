@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.http.client.ClientProtocolException;
 
 import com.dragontek.mygpoclient.Global;
+import com.dragontek.mygpoclient.IPodcast;
 import com.dragontek.mygpoclient.Locator;
 import com.dragontek.mygpoclient.json.JsonClient;
 import com.dragontek.mygpoclient.simple.Podcast;
@@ -63,10 +64,10 @@ public class PublicClient
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public List<ToplistPodcast> getToplist(int count) throws JsonSyntaxException, ClientProtocolException, IOException
+	public List<IPodcast> getToplist(int count) throws JsonSyntaxException, ClientProtocolException, IOException
 	{
 		String uri = _locator.toplistUri(count);
-		Type collectionType = new TypeToken<ArrayList<ToplistPodcast>>(){}.getType();
+		Type collectionType = new TypeToken<ArrayList<Podcast>>(){}.getType();
 		return _gson.fromJson(_client.GET(uri), collectionType);
 	}
 	
@@ -76,7 +77,7 @@ public class PublicClient
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public List<ToplistPodcast> getToplist() throws JsonSyntaxException, ClientProtocolException, IOException
+	public List<IPodcast> getToplist() throws JsonSyntaxException, ClientProtocolException, IOException
 	{
 		return getToplist(Global.TOPLIST_DEFAULT);
 	}
@@ -88,7 +89,7 @@ public class PublicClient
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public List<Podcast> searchPodcast(String query) throws JsonSyntaxException, ClientProtocolException, IOException
+	public List<IPodcast> searchPodcast(String query) throws JsonSyntaxException, ClientProtocolException, IOException
 	{
 		String uri = _locator.searchUri(URLEncoder.encode(query, "UTF-8")); 
 		Type collectionType = new TypeToken<ArrayList<Podcast>>(){}.getType();

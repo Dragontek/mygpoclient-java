@@ -3,9 +3,10 @@ package com.dragontek.mygpoclient.extras;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
+import com.dragontek.mygpoclient.IPodcast;
 import com.dragontek.mygpoclient.json.JsonClient;
-import com.dragontek.mygpoclient.simple.Podcast;
 import com.google.gson.Gson;
 
 public class iTunesSearchApi {
@@ -17,26 +18,18 @@ public class iTunesSearchApi {
 	{
 		client = new JsonClient();
 	}
-	public ArrayList<Podcast> search(String query) throws IOException
+	
+	public List<IPodcast> searchPodcast(String query) throws IOException
 	{
-		// TODO: I'm sure there's a better way to do this with Gson, but as a quick fix, I'm manually
-		// creating a Podcast arraylist from entity's
 		String response = client.GET(FIND_URL + URLEncoder.encode(query, "UTF-8"));
 		
-		ArrayList<Podcast> podcasts = new ArrayList<Podcast>();
 		Gson gson = new Gson();
-		
 		Entity entity = gson.fromJson(response, Entity.class);
-		for(Result r : entity.results)
-		{
-			Podcast p = new Podcast(r.feedUrl, r.collectionName, r.artistName);
-			if(r.artworkUrl100 != null)
-				p.logo_url = r.artworkUrl100;
-			
-			
-			podcasts.add(p);
-		}
-		return podcasts;
+		
+		List<IPodcast> results = new ArrayList<IPodcast>(); // entity.results;
+		results.addAll(entity.results);
+
+		return results;
 	}
 
 	public class Entity
@@ -44,16 +37,57 @@ public class iTunesSearchApi {
 		int resultCount;
 		ArrayList<Result> results;
 	}
-	public class Result
+
+	public class Result implements IPodcast
 	{
-		public String kind;
-		public String artistName;
-		public String feedUrl;
-		public String collectionName;
-		public String trackName;
-		public String artworkUrl30;
-		public String artworkUrl60;
-		public String artworkUrl100;
+		private String kind;
+		private String artistName;
+		private String feedUrl;
+		private String collectionName;
+		private String trackName;
+		private String artworkUrl30;
+		private String artworkUrl60;
+		private String artworkUrl100;
+		
+		@Override
+		public String getUrl() {
+			return this.feedUrl;
+		}
+		
+		@Override
+		public String getTitle() {
+			return this.trackName;
+		}
+		
+		@Override
+		public String getDescription() {
+			return this.artistName;
+		}
+		
+		@Override
+		public String getLogoUrl() {
+			if(this.artworkUrl100 != null)
+				return this.artworkUrl100;
+			else if(this.artworkUrl60 != null)
+				return this.artworkUrl60;
+			else
+				return this.artworkUrl30;
+		}
+
+		@Override
+		public void setTitle(String title) {
+			this.trackName = title;
+		}
+
+		@Override
+		public void setDescription(String description) {
+			this.artistName = description;
+		}
+
+		@Override
+		public void setLogoUrl(String logourl) {
+			this.artworkUrl100 = logourl;
+		}
 	}
 	
 }
