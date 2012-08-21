@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.dragontek.mygpoclient.IPodcast;
 import com.dragontek.mygpoclient.pub.ClientConfig;
 import com.dragontek.mygpoclient.pub.PublicClient;
+import com.dragontek.mygpoclient.simple.IPodcast;
 
 import junit.framework.TestCase;
 

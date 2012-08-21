@@ -5,8 +5,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dragontek.mygpoclient.IPodcast;
 import com.dragontek.mygpoclient.json.JsonClient;
+import com.dragontek.mygpoclient.simple.IPodcast;
 import com.google.gson.Gson;
 
 public class iTunesSearchApi {

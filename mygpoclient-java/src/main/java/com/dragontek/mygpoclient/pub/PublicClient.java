@@ -9,9 +9,9 @@ import java.util.List;
 import org.apache.http.client.ClientProtocolException;
 
 import com.dragontek.mygpoclient.Global;
-import com.dragontek.mygpoclient.IPodcast;
 import com.dragontek.mygpoclient.Locator;
 import com.dragontek.mygpoclient.json.JsonClient;
+import com.dragontek.mygpoclient.simple.IPodcast;
 import com.dragontek.mygpoclient.simple.Podcast;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

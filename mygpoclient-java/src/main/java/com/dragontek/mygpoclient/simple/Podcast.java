@@ -1,6 +1,5 @@
 package com.dragontek.mygpoclient.simple;
 
-import com.dragontek.mygpoclient.IPodcast;
 import com.dragontek.mygpoclient.feeds.Feed;
 import com.dragontek.mygpoclient.feeds.IFeed;
 
