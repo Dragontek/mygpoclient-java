@@ -35,10 +35,13 @@
 
         <p>mygpoclient-java is my attempt to port the Python <a href="http://thp.io/2010/mygpoclient/">mygpoclient</a> to Java.  I've tried to stay as close to the original Python source as possible so that developers that are comfortable with the Python version will be at home.</p>
         <p>The <a href="http://gpodder.net">gPodder.net</a> web service provides a way to manage podcasts and keep them synchronized across multiple devices.  It is used in the <a href="http://gpodder.org">gPodder desktop client</a>.</p>
-        <p>This project to port to Java is in support of my <a href="http://www.dragontek.com">Podder client for Android</a>.</p>
+        <p>This port to Java is in support of my <a href="http://www.dragontek.com">Podder client for Android</a>.</p>
         
         <h3>Recent Milestones</h3>
         <ul>
+          <li>20120819 - Interfaces added for standardized IFeeds and IPodcasts</li>
+          <li>20120819 - FeedServiceClient supports http://feeds.gpodder.net</li>
+          <li>20120816 - Added iTunesSearchApi and GoogleReaderApi to "extras" package.</li>
           <li>20120718 - Transitioned to Gson library and removed Json.org dependency.</li>
           <li>20120713 - FeedService implemented</li>
           <li>20120604 - Project converted to Maven for dependency management.</li>
@@ -90,8 +93,6 @@ $ mvn test</code></pre>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-
-    
 
   </body>
 </html>
