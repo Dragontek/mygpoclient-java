@@ -1,4 +1,4 @@
-package com.dragontek.mygpoclient;
+package com.dragontek.mygpoclient.simple;
 
 public interface IPodcast {
 	public String getUrl();
