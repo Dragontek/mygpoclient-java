@@ -16,7 +16,6 @@ import com.dragontek.mygpoclient.feeds.IFeed;
 import com.dragontek.mygpoclient.feeds.IFeed.IEpisode;
 import com.dragontek.mygpoclient.feeds.IFeed.IEpisode.IEnclosure;
 import com.dragontek.mygpoclient.http.HttpClient;
-import com.dragontek.mygpoclient.json.JsonClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -91,7 +90,6 @@ public class GoogleReaderAPI extends HttpClient {
 	{
 		
 		Gson gson = new Gson();
-		//Log.i(this.toString(), "GoogleFeed Parsing: " + url);
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
        	// TODO: Optimize with since timestamp and no comments 
 		//nameValuePairs.add(new BasicNameValuePair("ot", timestamp));
@@ -126,35 +124,10 @@ public class GoogleReaderAPI extends HttpClient {
 	}
 	public List<String> getSubscriptions(String label) throws AuthenticationException, IOException
 	{
-        //if(mActionToken == null)
-        //	requestActionToken();
-
-        //List<String> subscriptions = new ArrayList<String>();
 		String response = GET(BASE_API_URI + "subscription/list?output=json");
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<ArrayList<String>>(){}.getType();
 		return gson.fromJson(response, collectionType);
-		
-		/*
-		JSONObject result = new JSONObject(response);
-		JSONArray jsonSubscriptions = result.getJSONArray("subscriptions");
-		for(int s=0; s < jsonSubscriptions.length(); s++)
-		{
-			JSONObject jsonSubscription = jsonSubscriptions.getJSONObject(s);
-			JSONArray categories = jsonSubscription.getJSONArray("categories");
-			for(int c=0; c < categories.length(); c++)
-			{
-				JSONObject category = categories.getJSONObject(c);
-				String feedLabel = category.getString("label");
-				if(feedLabel.equals(label))
-				{
-					String feedUrl =  jsonSubscription.getString("id").replaceFirst("feed/", "");
-					subscriptions.add(feedUrl);
-				}
-			}
-		}
-		*/
-		//return subscriptions;
 	}
 	
 	
@@ -180,7 +153,10 @@ public class GoogleReaderAPI extends HttpClient {
 		}
 		@Override
 		public String getLink() {
-			return this.alternate[0].href;
+			if(this.alternate != null && this.alternate.length > 0)
+				return this.alternate[0].href;
+			else
+				return null;
 		}
 
 		@Override
@@ -203,6 +179,7 @@ public class GoogleReaderAPI extends HttpClient {
         private long updated;
         private long crawlTimeMsec;
         private String[] categories;
+		private Origin origin;
 
         public boolean isState(String state)
         {
@@ -239,7 +216,7 @@ public class GoogleReaderAPI extends HttpClient {
 
 		@Override
 		public String getLink() {
-			return this.alternate[0].href;
+			return this.origin.htmlUrl;
 		}
 
 		@Override
@@ -266,6 +243,12 @@ public class GoogleReaderAPI extends HttpClient {
     {
     	public String href;
     	public String type;
+    }
+    public class Origin
+    {
+    	public String htmlUrl;
+    	public String streamId;
+    	public String title;
     }
     public class Enclosure implements IEnclosure
     {
