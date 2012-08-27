@@ -13,12 +13,17 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.dragontek.mygpoclient.feeds.IFeed;
-import com.dragontek.mygpoclient.feeds.IFeed.IEpisode;
-import com.dragontek.mygpoclient.feeds.IFeed.IEpisode.IEnclosure;
 import com.dragontek.mygpoclient.http.HttpClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * Implementation of some of the basic Google Reader API
+ * methods.
+ *  
+ * @author joshua.mondragon
+ *
+ */
 public class GoogleReaderAPI extends HttpClient {
 
 	private String mActionToken = null;
@@ -86,6 +91,16 @@ public class GoogleReaderAPI extends HttpClient {
         POST(BASE_API_URI + "edit-tag", new UrlEncodedFormEntity(nameValuePairs));
 	}
 	
+	public List<IFeed> parseFeeds(String[] feed_urls) throws IOException
+	{
+
+		ArrayList<IFeed> feeds = new ArrayList<IFeed>();
+		for(String feed : feed_urls)
+		{
+			feeds.add(parse(feed));
+		}
+		return feeds;
+	}
 	public GoogleFeed parse(String url) throws IOException
 	{
 		
@@ -129,144 +144,4 @@ public class GoogleReaderAPI extends HttpClient {
 		Type collectionType = new TypeToken<ArrayList<String>>(){}.getType();
 		return gson.fromJson(response, collectionType);
 	}
-	
-	
-    public class GoogleFeed implements IFeed
-    {
-        private String id;
-    	private String title;
-        private String description;
-        private Alternate[] alternate;
-        private Item[] items;
-		
-        @Override
-		public String getTitle() {
-			return this.title;
-		}
-		@Override
-		public String getUrl() {
-			return this.id.replace("feed/", "");
-		}
-		@Override
-		public String getDescription() {
-			return this.description;
-		}
-		@Override
-		public String getLink() {
-			if(this.alternate != null && this.alternate.length > 0)
-				return this.alternate[0].href;
-			else
-				return null;
-		}
-
-		@Override
-		public IEpisode[] getEpisodes() {
-			return this.items;
-		}
-    }
-   
-   
-    public class Item implements IEpisode
-    {
-        private String id;
-        private Enclosure[] enclosure;
-        private Alternate[] alternate;
-        private String author;
-        private String title;
-        private Content content;
-        private Content summary;
-        private long published;
-        private long updated;
-        private long crawlTimeMsec;
-        private String[] categories;
-		private Origin origin;
-
-        public boolean isState(String state)
-        {
-        	for(String category : categories)
-        	{
-        		if(category.endsWith(state))
-        			return true;
-        	}
-        	return false;
-        }
-
-		@Override
-		public String getGuid() {
-			return this.id;
-		}
-
-		@Override
-		public String getTitle() {
-			return this.title;
-		}
-
-		@Override
-		public String getDescription() {
-			if(this.content != null)
-				return this.content.content;
-			else
-				return this.summary.content;
-		}
-
-		@Override
-		public long getReleased() {
-			return this.published;
-		}
-
-		@Override
-		public String getLink() {
-			return this.origin.htmlUrl;
-		}
-
-		@Override
-		public IEnclosure getEnclosure() {
-			return this.enclosure[0];
-		}
-
-		@Override
-		public String getAuthor() {
-			return this.author;
-		}
-    }
-    public class Content
-    {
-    	public String direction;
-    	public String content;
-    }
-    public class Summary
-    {
-    	public String direction;
-    	public String content;
-    }
-    public class Alternate
-    {
-    	public String href;
-    	public String type;
-    }
-    public class Origin
-    {
-    	public String htmlUrl;
-    	public String streamId;
-    	public String title;
-    }
-    public class Enclosure implements IEnclosure
-    {
-    	public String href;
-    	public String type;
-    	public long length;
-		
-    	@Override
-		public String getUrl() {
-			return this.href;
-		}
-		@Override
-		public String getMimetype() {
-			return this.type;
-		}
-		@Override
-		public long getFilesize() {
-			return this.length;
-		}
-    }
 }
