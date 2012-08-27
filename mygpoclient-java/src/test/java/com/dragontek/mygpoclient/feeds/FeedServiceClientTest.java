@@ -1,31 +1,70 @@
 package com.dragontek.mygpoclient.feeds;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 
+import com.dragontek.mygpoclient.extras.GoogleReaderAPI;
 import com.dragontek.mygpoclient.feeds.FeedServiceClient;
 import com.dragontek.mygpoclient.feeds.FeedServiceResponse;
+import com.dragontek.mygpoclient.feeds.IFeed.IEpisode;
 
 import junit.framework.TestCase;
 
 public class FeedServiceClientTest extends TestCase {
-	FeedServiceClient client;
+	FeedServiceClient feed_client;
+	GoogleReaderAPI greader_client;
+	String[] feed_urls = new String[] { "http://leo.am/podcasts/floss", "http://www.lightspeedmagazine.com/itunes-rss/" };
+
 	public FeedServiceClientTest(String name) throws ClientProtocolException, IOException
 	{
 		super(name);
-		client = new FeedServiceClient();
-		
+		feed_client = new FeedServiceClient();
+		greader_client = new GoogleReaderAPI();
 	}
 	
 	@Test
-	public void testGetFeeds() throws Exception {
-		String[] feeds = new String[] { "http://leo.am/podcasts/floss", "http://revision3.com/trs/feed/MP4-hd30" };
-		FeedServiceResponse response = client.parseFeeds(feeds, 0L, true);
-		assertNotNull(response); // new ArrayList() is never null!
-		assertEquals(feeds.length, response.size());
+	public void testFeedServiceClient() throws Exception {
+		FeedServiceResponse response = feed_client.parseFeeds(feed_urls, 0L, true);
+		assertEquals(feed_urls.length, response.size());
+		testFeed(new ArrayList<IFeed>( response ));
 	}
 	
+	@Test
+	public void testGoogleReaderAPI() throws Exception {
+		List<IFeed> response = greader_client.parseFeeds(feed_urls);
+		assertEquals(feed_urls.length, response.size());
+		testFeed(response);
+	}
 	
+	private void testFeed(List<IFeed> feeds)
+	{
+		assertNotNull(feeds); // new ArrayList() is never null!
+		
+		for(IFeed f : feeds)
+		{
+			assertNotNull(f.getUrl());
+			assertNotNull(f.getTitle());
+			assertNotNull(f.getDescription());
+			assertNotNull(f.getLink());
+			assertNotNull(f.getEpisodes());
+			
+			for(IEpisode e : f.getEpisodes())
+			{
+				assertNotNull(e.getGuid());
+				assertNotNull(e.getTitle());
+				assertNotNull(e.getDescription());
+				// Not all feeds include a link;
+				//assertNotNull(e.getLink());
+				assertNotNull(e.getEnclosure());
+				assertNotNull(e.getEnclosure().getUrl());
+				assertNotNull(e.getEnclosure().getMimetype());
+				assertNotNull(e.getEnclosure().getFilesize());
+			}
+		}
+		
+	}
 }
