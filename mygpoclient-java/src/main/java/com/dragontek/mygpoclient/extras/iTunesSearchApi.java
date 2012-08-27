@@ -9,11 +9,28 @@ import com.dragontek.mygpoclient.json.JsonClient;
 import com.dragontek.mygpoclient.simple.IPodcast;
 import com.google.gson.Gson;
 
+/**
+ * Simple client for searching for podcasts using the iTunesSearchApi
+ * <p>
+ * This is the API client implementation that provides a
+ * Java interface to the iTunesSearchApi.  Documentation for
+ * this API can be found here:
+ * 
+ * http://www.apple.com/itunes/affiliates/resources/documentation/itunes-store-web-service-search-api.html
+ *  
+ * @author joshua.mondragon
+ *
+ */
 public class iTunesSearchApi {
 
+	// TODO: This could really be expanded to be able to search for anything in
+	// 		the iTunes store, but since this library is specific to podcasts,
+	//		I narrow down the search.
 	private String BASE_URL = "http://itunes.apple.com/search?";
 	private String FIND_URL = BASE_URL + "media=podcast&entity=podcast&term=";
+
 	private JsonClient client;
+
 	public iTunesSearchApi()
 	{
 		client = new JsonClient();
