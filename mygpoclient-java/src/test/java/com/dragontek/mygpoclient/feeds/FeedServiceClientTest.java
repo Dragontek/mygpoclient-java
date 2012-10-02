@@ -17,7 +17,7 @@ import junit.framework.TestCase;
 public class FeedServiceClientTest extends TestCase {
 	FeedServiceClient feed_client;
 	GoogleReaderAPI greader_client;
-	String[] feed_urls = new String[] { "http://leo.am/podcasts/floss", "http://www.lightspeedmagazine.com/itunes-rss/" };
+	String[] feed_urls = new String[] { "http://leo.am/podcasts/floss", "http://www.lightspeedmagazine.com/itunes-rss/", "http://revision3.com/trs/feed/MP4-hd30" };
 
 	public FeedServiceClientTest(String name) throws ClientProtocolException, IOException
 	{
