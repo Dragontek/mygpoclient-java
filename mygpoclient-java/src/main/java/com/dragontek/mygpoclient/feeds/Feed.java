@@ -1,5 +1,6 @@
 package com.dragontek.mygpoclient.feeds;
 
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.List;
 
@@ -15,9 +16,13 @@ public class Feed implements IFeed {
 	private String logo_data;
 	private String[] content_types;
 	private String hub;
-	private Dictionary<String, String> errors;
-	private Dictionary<String, String> warnings;
-	private long http_last_modified;
+	/* These are disabled because the new feed service doesn't support them the same
+	 * way that the old service did.  Errors and warnings aren't coming back as dictionary
+	 * and http_last_modified is a date string rather than UNIX timestamp
+	 */
+	//private Dictionary<String, String> errors;
+	//private Dictionary<String, String> warnings;
+	//private long http_last_modified;
 	private String http_etag;
 	private Episode[] episodes;
 	public String getTitle()
