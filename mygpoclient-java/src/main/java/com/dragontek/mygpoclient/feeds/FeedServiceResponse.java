@@ -15,6 +15,10 @@ public class FeedServiceResponse extends ArrayList<Feed> {
 		super.addAll(feeds);
 	}
 	
+	public long getLastModified()
+	{
+		return last_modfied;
+	}
 	public void getFeeds()
 	{
 		
