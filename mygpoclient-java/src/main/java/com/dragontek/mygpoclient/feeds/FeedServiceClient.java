@@ -14,6 +14,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.dragontek.mygpoclient.Global;
 import com.dragontek.mygpoclient.json.JsonClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -90,16 +91,21 @@ public class FeedServiceClient extends JsonClient {
 		{
 			args.add(new BasicNameValuePair("url", feed_url));
 		}
-		
-		Gson gson = new Gson();
-		Type collectionType = new TypeToken<ArrayList<Feed>>(){}.getType();
 
+	
+		Gson gson = new Gson();
+		String response = this.POST(HOST + "/parse", new UrlEncodedFormEntity(args, "UTF-8"));
+		
+		if(Global.DEBUG)
+			System.out.println("RESPONSE: " + response);
+		
 		// POST
-		List<Feed> response = gson.fromJson(this.POST(HOST + "/parse", new UrlEncodedFormEntity(args, "UTF-8")), collectionType);
+		Type collectionType = new TypeToken<ArrayList<Feed>>(){}.getType();
+		List<Feed> feeds = gson.fromJson(response, collectionType);
 		// GET
 		//List<Feed> response = gson.fromJson(this.GET(HOST + "/parse?" + URLEncodedUtils.format(args, "UTF-8")), collectionType);	
 
-		return new FeedServiceResponse(response, 0L, feed_urls);
+		return new FeedServiceResponse(feeds, 0L, feed_urls);
 	}
 	
 }
