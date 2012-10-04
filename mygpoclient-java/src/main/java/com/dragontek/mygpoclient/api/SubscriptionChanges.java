@@ -1,6 +1,6 @@
 package com.dragontek.mygpoclient.api;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  *	Container for subscription changes
@@ -11,17 +11,17 @@ import java.util.List;
 public class SubscriptionChanges {
 	
 	/** A list of URLs that have been added */
-	public List<String> add;
+	public Set<String> add;
 	/** A list of URLs that have been removed */
-	public List<String> remove;
+	public Set<String> remove;
 	/** A timestamp value for use in future requests */
 	public long timestamp;
 	
-	public SubscriptionChanges(List<String> add, List<String> remove)
+	public SubscriptionChanges(Set<String> add, Set<String> remove)
 	{
 		this(add, remove, 0L); //or should timestamp be now?
 	}
-	public SubscriptionChanges(List<String> add, List<String> remove, long timestamp)
+	public SubscriptionChanges(Set<String> add, Set<String> remove, long timestamp)
 	{
 		this.add = add;
 		this.remove = remove;

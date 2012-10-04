@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.entity.StringEntity;
@@ -57,8 +58,8 @@ public class MygPodderClient extends SimpleClient
      * subscription list so that new_url is used instead of old_url.
 	 * 
 	 * @param deviceId		the id of the device to be updated 
-	 * @param addUrls		a list of urls to be added to the device
-	 * @param removeUrls	a list of urls to be removed from the device
+	 * @param addUrls		a set of urls to be added to the device
+	 * @param removeUrls	a set of urls to be removed from the device
 	 * @return a {@link UpdateResult} object that contains a list of (sanitized)
      * URLs and a "since" value that can be used for future calls to
      * {@link pullSubscriptions}.
@@ -66,7 +67,7 @@ public class MygPodderClient extends SimpleClient
 	 * @throws IOException 
 	 * @throws ClientProtocolException 
 	 */
-	public UpdateResult updateSubscriptions(String deviceId, List<String> add, List<String> remove) throws JsonSyntaxException, ClientProtocolException, IOException
+	public UpdateResult updateSubscriptions(String deviceId, Set<String> add, Set<String> remove) throws JsonSyntaxException, ClientProtocolException, IOException
 	{
 		String uri = _locator.addRemoveSubscriptionsUri(deviceId);
 		SubscriptionChanges changes = new SubscriptionChanges(add, remove);
