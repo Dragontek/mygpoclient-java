@@ -130,7 +130,10 @@ public class MygPodderClient extends SimpleClient
 	{
 		return downloadEpisodeActions(since, null, deviceId);
 	}
-	
+	public EpisodeActionChanges downloadEpisodeActions(long since) throws ClientProtocolException, IOException
+	{
+		return downloadEpisodeActions(since, null, null);
+	}
     /**
      * Update the description of a device on the server
      * <p>

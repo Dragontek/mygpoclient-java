@@ -96,8 +96,8 @@ public class FeedServiceClient extends JsonClient {
 		Gson gson = new Gson();
 		String response = this.POST(HOST + "/parse", new UrlEncodedFormEntity(args, "UTF-8"));
 		
-		if(Global.DEBUG)
-			System.out.println("RESPONSE: " + response);
+		//if(Global.DEBUG)
+		//	System.out.println("RESPONSE: " + response);
 		
 		// POST
 		Type collectionType = new TypeToken<ArrayList<Feed>>(){}.getType();

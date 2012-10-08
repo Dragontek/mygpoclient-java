@@ -121,9 +121,11 @@ public class Locator {
 	
 	public String downloadEpisodeActionsUri(long since, String podcast, String deviceId)
 	{
-		String filename = String.format("%s.json?device=%s&since=%s&aggregated=true", this._username, deviceId, since);
+		String filename = String.format("%s.json?since=%s&aggregated=true", this._username, since);
+		if(deviceId != null)
+			filename += String.format("&device=%s", deviceId);
 		if(podcast != null)
-			filename = String.format("%s.json?podcast=%s&device=%s&since=%s&aggregated=true", this._username, podcast, deviceId, since);
+			filename += String.format("&podcast=%s", podcast);
 		
 		return Util.join(new String[] { this._base, "episodes", filename });
 	}
@@ -132,7 +134,11 @@ public class Locator {
 	{
 		return downloadEpisodeActionsUri(since, null, deviceId);
 	}
-	
+	public String downloadDeviceUpdates(long since, String deviceId)
+	{
+		String filename = String.format("%s.json?since=%s", deviceId, since);
+		return Util.join(new String[] { this._base, this._username, filename });
+	}
 	public String deviceSettingsUri(String deviceId)
 	{
 		String filename = String.format("%s.json", deviceId);
