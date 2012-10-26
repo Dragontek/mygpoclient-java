@@ -1,5 +1,6 @@
 package com.dragontek.mygpoclient.feeds;
 
+
 /**
  * A standard interface that is used for all Feed classes.
  * Classes implementing these are used for updating podcast

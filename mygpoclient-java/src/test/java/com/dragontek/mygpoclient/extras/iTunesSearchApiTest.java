@@ -3,13 +3,12 @@ package com.dragontek.mygpoclient.extras;
 import java.io.IOException;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 
-import com.dragontek.mygpoclient.extras.iTunesSearchApi;
 import com.dragontek.mygpoclient.simple.IPodcast;
-
-import junit.framework.TestCase;
 
 public class iTunesSearchApiTest extends TestCase {
 	iTunesSearchApi client;

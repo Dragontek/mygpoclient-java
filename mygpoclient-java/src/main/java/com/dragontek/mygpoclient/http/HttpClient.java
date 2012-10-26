@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -15,7 +12,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -42,7 +38,7 @@ public class HttpClient extends DefaultHttpClient {
 		this._password = password;
 	}
 	
-	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity entity) throws UnsupportedEncodingException
+	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity entity)
 	{
 		//TODO: add params to uri if it's a GET instead of a post
 		HttpUriRequest request = new HttpGet(uri);
@@ -56,12 +52,6 @@ public class HttpClient extends DefaultHttpClient {
 		{
 			request = new HttpPut(uri);
 			((HttpPut)request).setEntity(entity);
-		}
-
-		if(_authToken != null)
-		{
-			// TODO: Set-Cookie?
-			//request.set
 		}
 
 		// Authentication
@@ -98,7 +88,7 @@ public class HttpClient extends DefaultHttpClient {
 		this._authToken = token;
 	}
 	
-	protected String request(String method, String uri, HttpEntity data) throws ClientProtocolException, IOException
+	protected String request(String method, String uri, HttpEntity data) throws IOException
 	{
 		HttpUriRequest request = prepareRequest(method, uri, data);
 		HttpResponse response = execute(request);
@@ -118,11 +108,9 @@ public class HttpClient extends DefaultHttpClient {
 			}
 			for(Cookie c : this.getCookieStore().getCookies())
 			{
-				if(c.getName().equals("sessionid"));
-					_authToken = c.getValue();
-					
+				//if(c.getName().equals("sessionid"));
+				//	_authToken = c.getValue();
 				System.out.println(String.format("COOKIE: %s: %s -- %s", c.getName(), c.getValue(), c.getDomain()));
-				
 			}
 			System.out.println(response.getStatusLine());
 			//System.out.println(response);
@@ -133,24 +121,24 @@ public class HttpClient extends DefaultHttpClient {
 		{
 			return (String)processResponse(response);
 		} else {
-			System.out.println("ERROR: " + s.getReasonPhrase());
+			// If we get anything other than 200 throw it so we can handle it
 			throw new HttpResponseException(s.getStatusCode(), s.toString());
 		}
 	}
 	
 	
-	public String GET(String uri) throws ClientProtocolException, IOException {
+	public String GET(String uri) throws IOException {
 		return request("GET", uri, null);
 	}
-	public String GET(String uri, HttpEntity data) throws ClientProtocolException, IOException {
+	public String GET(String uri, HttpEntity data) throws IOException {
 		return request("GET", uri, data);
 	}
 	
-	public String POST(String uri, HttpEntity data) throws ClientProtocolException, IOException
+	public String POST(String uri, HttpEntity data) throws IOException 
 	{
 		return request("POST", uri, data);
 	}
-	public String PUT(String uri, HttpEntity data) throws ClientProtocolException, IOException
+	public String PUT(String uri, HttpEntity data) throws IOException
 	{
 		return request("PUT", uri, data);
 	}

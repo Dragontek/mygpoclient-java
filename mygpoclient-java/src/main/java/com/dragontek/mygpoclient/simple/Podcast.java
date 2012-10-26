@@ -85,7 +85,9 @@ public class Podcast implements IPodcast {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	public String getWebsite() {
+		return this.website;
+	}
 	@Override
 	public String getLogoUrl() {
 		return this.logo_url;

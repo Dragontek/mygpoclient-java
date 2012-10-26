@@ -1,20 +1,17 @@
 package com.dragontek.mygpoclient.feeds;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 
-import com.dragontek.mygpoclient.Global;
 import com.dragontek.mygpoclient.json.JsonClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -39,7 +36,7 @@ public class FeedServiceClient extends JsonClient {
 	}
 	
 	@Override
-	public HttpUriRequest prepareRequest(String method, String uri, HttpEntity data) throws UnsupportedEncodingException {
+	public HttpUriRequest prepareRequest(String method, String uri, HttpEntity data) {
 		HttpUriRequest request = super.prepareRequest(method, uri, data);
 		// TODO: Implement this if-modified-since
 		//request.addHeader("If-Modified-Since", "");
@@ -89,7 +86,9 @@ public class FeedServiceClient extends JsonClient {
 
 		for(String feed_url : feed_urls)
 		{
-			args.add(new BasicNameValuePair("url", feed_url));
+			BasicNameValuePair nvp = new BasicNameValuePair("url", feed_url);
+			if(!args.contains(nvp))
+				args.add(new BasicNameValuePair("url", feed_url));
 		}
 
 	

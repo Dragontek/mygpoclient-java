@@ -2,14 +2,12 @@ package com.dragontek.mygpoclient.simple;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -90,43 +88,67 @@ public class SimpleClient
 		this._client.setCookieStore(cookieStore);
 	}
 	
-	public boolean authenticate(String username, String password) throws ClientProtocolException, IOException, InvalidParameterException
+	public boolean authenticate(String username, String password)
 	{
-		
 		if(username != null && password!= null)
 		{
 			HttpClient tempClient = new HttpClient(username, password);
-			tempClient.POST(_locator.loginUri(), null);
-			for(Cookie c : tempClient.getCookieStore().getCookies())
-			{
-				if(c.getName().equals("sessionid"));
-					_authToken = c.getValue().toString();
+			try {
+				tempClient.POST(_locator.loginUri(), null);
+				for(Cookie c : tempClient.getCookieStore().getCookies())
+				{
+					if(c.getName().equals("sessionid"));
+						_authToken = c.getValue().toString();
+				}
+			} catch (Exception e) {
+				_authToken=null;
 			}
-			return _authToken != null;
 		}
-		else {
-			throw new InvalidParameterException("Username and Password are required");
-		}
+		return _authToken != null;
 	}
 	
-	public List<String> getSubscriptions(String deviceId) throws ClientProtocolException, IOException
+	public List<String> getSubscriptions(String deviceId) throws IOException, AuthenticationException
 	{
 		String uri = _locator.subscriptionsUri(deviceId);
 		Type collectionType = new TypeToken<ArrayList<String>>(){}.getType();
-		return _gson.fromJson(_client.GET(uri), collectionType);
+		try {
+			return _gson.fromJson(_client.GET(uri), collectionType);
+		} catch (HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Gpodder.net",e);
+			else
+				throw e;
+		}
+			
 	}
 	
-	public boolean putSubscriptions(String deviceId, List<String> urls) throws ClientProtocolException, IOException
+	public boolean putSubscriptions(String deviceId, List<String> urls) throws IOException, AuthenticationException
 	{
 		String uri = _locator.subscriptionsUri(deviceId);
-		String response = _client.PUT(uri, new StringEntity(_gson.toJson(urls)));
-		return (response == "");
+		try {
+			String response = _client.PUT(uri, new StringEntity(_gson.toJson(urls)));
+			return (response == "");
+		} catch (HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Gpodder.net",e);
+			else
+				throw e;
+		}
+		
 	}
 	
-	public List<Podcast> getSuggestions(int count) throws ClientProtocolException, IOException
+	public List<Podcast> getSuggestions(int count) throws IOException, AuthenticationException
 	{
 		String uri = _locator.suggestionsUri(count);
 		Type collectionType = new TypeToken<ArrayList<Podcast>>(){}.getType();
-		return _gson.fromJson(_client.GET(uri), collectionType);
+		try {
+			return _gson.fromJson(_client.GET(uri), collectionType);
+		} catch (HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Gpodder.net",e);
+			else
+				throw e;
+		}
+			
 	}
 }

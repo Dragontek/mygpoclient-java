@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 
 import com.dragontek.mygpoclient.extras.GoogleReaderAPI;
-import com.dragontek.mygpoclient.feeds.FeedServiceClient;
-import com.dragontek.mygpoclient.feeds.FeedServiceResponse;
 import com.dragontek.mygpoclient.feeds.IFeed.IEpisode;
-
-import junit.framework.TestCase;
 
 public class FeedServiceClientTest extends TestCase {
 	FeedServiceClient feed_client;

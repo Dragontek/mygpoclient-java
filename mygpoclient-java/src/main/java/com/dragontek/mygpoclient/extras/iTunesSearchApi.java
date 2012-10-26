@@ -71,6 +71,13 @@ public class iTunesSearchApi {
 			return this.feedUrl;
 		}
 		
+		public String getKind() {
+			return this.kind;
+		}
+		
+		public String getCollectionName() {
+			return this.collectionName;
+		}
 		@Override
 		public String getTitle() {
 			return this.trackName;

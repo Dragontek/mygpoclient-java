@@ -6,10 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.HttpException;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.StringEntity;
 
 import com.dragontek.mygpoclient.simple.SimpleClient;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
@@ -38,11 +42,11 @@ public class MygPodderClient extends SimpleClient
 		super(username);
 	}
 	
-	public List<String> getSubscriptions(PodcastDevice device) throws ClientProtocolException, IOException {
+	public List<String> getSubscriptions(PodcastDevice device) throws IOException, JsonSyntaxException, AuthenticationException {
 		return super.getSubscriptions(device.id);
 	}
 	
-	public boolean putSubscriptions(PodcastDevice device, List<String> urls) throws ClientProtocolException, IOException {
+	public boolean putSubscriptions(PodcastDevice device, List<String> urls) throws IOException, AuthenticationException {
 		return super.putSubscriptions(device.id, urls);
 	}
 
@@ -63,11 +67,9 @@ public class MygPodderClient extends SimpleClient
 	 * @return a {@link UpdateResult} object that contains a list of (sanitized)
      * URLs and a "since" value that can be used for future calls to
      * {@link pullSubscriptions}.
-	 * @throws JsonSyntaxException 
 	 * @throws IOException 
-	 * @throws ClientProtocolException 
 	 */
-	public UpdateResult updateSubscriptions(String deviceId, Set<String> add, Set<String> remove) throws JsonSyntaxException, ClientProtocolException, IOException
+	public UpdateResult updateSubscriptions(String deviceId, Set<String> add, Set<String> remove) throws IOException
 	{
 		String uri = _locator.addRemoveSubscriptionsUri(deviceId);
 		SubscriptionChanges changes = new SubscriptionChanges(add, remove);
@@ -84,13 +86,21 @@ public class MygPodderClient extends SimpleClient
         added and one for removed podcast URLs) and a "since" value
         that can be used for future calls to this method.
 	 * @throws IOException 
-	 * @throws JSONException 
-	 * @throws ClientProtocolException 
+	 * @throws AuthenticationException 
+	 * @throws HttpException 
 	 */
-	public SubscriptionChanges pullSubscriptions(String deviceId, long since) throws ClientProtocolException, IOException
+	public SubscriptionChanges pullSubscriptions(String deviceId, long since) throws IOException, AuthenticationException
 	{
 		String uri = _locator.subscriptionUpdatesUri(deviceId, since);
-		return _gson.fromJson(_client.GET(uri), SubscriptionChanges.class);
+		try { 
+			return _gson.fromJson(_client.GET(uri), SubscriptionChanges.class);
+		} catch (HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Gpodder.net",e);
+			else
+				throw e;
+		}
+		
 	}
 	
     /**
@@ -98,15 +108,21 @@ public class MygPodderClient extends SimpleClient
      * @param actions a {@link List} of {@link EpisodeAction} objects
      * @return a timestamp that can be used for retrieving changes.
      * @throws IOException 
-     * @throws ClientProtocolException 
+     * @throws AuthenticationException 
      */
-	public long uploadEpisodeActions(List<EpisodeAction> actions) throws ClientProtocolException, IOException
+	public long uploadEpisodeActions(List<EpisodeAction> actions) throws IOException, AuthenticationException
 	{
-		String uri = _locator.uploadEpisodeActionsUri();
+		JsonParser parser = new JsonParser();
 		StringEntity data = new StringEntity(_gson.toJson(actions));
-		String response = _client.POST(uri, data);
-
-		return 0L;
+		try {
+			JsonObject response = (JsonObject)parser.parse(_client.POST(_locator.uploadEpisodeActionsUri(), data));
+			return response.get("timestamp").getAsLong();
+		} catch (HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Gpodder.net",e);
+			else
+				throw e;
+		}
 	}
 	
 	/**
@@ -119,18 +135,24 @@ public class MygPodderClient extends SimpleClient
         new actions and a "since" timestamp that can be used for
         future calls to this method when retrieving episodes.
 	 * @throws IOException 
-	 * @throws ClientProtocolException 
+	 * @throws AuthenticationException if the user is not authenticated
 	 */
-	public EpisodeActionChanges downloadEpisodeActions(long since, String podcast, String deviceId) throws ClientProtocolException, IOException
+	public EpisodeActionChanges downloadEpisodeActions(long since, String podcast, String deviceId) throws IOException, AuthenticationException
 	{
-		String uri = _locator.downloadEpisodeActionsUri(since, podcast, deviceId);
-		return _gson.fromJson(_client.GET(uri), EpisodeActionChanges.class);
+		try {
+			return _gson.fromJson(_client.GET(_locator.downloadEpisodeActionsUri(since, podcast, deviceId)), EpisodeActionChanges.class);
+		} catch (HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Gpodder.net",e);
+			else
+				throw e;
+		}
 	}
-	public EpisodeActionChanges downloadEpisodeActions(long since, String deviceId) throws ClientProtocolException, IOException
+	public EpisodeActionChanges downloadEpisodeActions(long since, String deviceId) throws IOException, AuthenticationException
 	{
 		return downloadEpisodeActions(since, null, deviceId);
 	}
-	public EpisodeActionChanges downloadEpisodeActions(long since) throws ClientProtocolException, IOException
+	public EpisodeActionChanges downloadEpisodeActions(long since) throws IOException, AuthenticationException
 	{
 		return downloadEpisodeActions(since, null, null);
 	}
@@ -149,15 +171,21 @@ public class MygPodderClient extends SimpleClient
      * @param type
      * @return true if the request succeeded, false otherwise.
      * @throws IOException 
-     * @throws ClientProtocolException 
+     * @throws AuthenticationException 
      */
-	public boolean updateDeviceSettings(String deviceId, String caption, String type) throws ClientProtocolException, IOException
+	public boolean updateDeviceSettings(String deviceId, String caption, String type) throws IOException, AuthenticationException
 	{
-		String uri = _locator.deviceSettingsUri(deviceId);
 		PodcastDevice device = new PodcastDevice(deviceId, caption, type);
 		StringEntity data = new StringEntity( _gson.toJson(device), "UTF-8");
-		String response = _client.POST(uri, data);
-		return response.equals("");
+		try {
+			_client.POST(_locator.deviceSettingsUri(deviceId), data);
+			return true;
+		} catch (HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Gpodder.net",e);
+			else
+				return false;
+		}
 	}
 	
 	/**
@@ -169,12 +197,19 @@ public class MygPodderClient extends SimpleClient
 	 * 
 	 * @return a {@link List} of this user's {@link PodcastDevice} objects
 	 * @throws IOException 
-	 * @throws ClientProtocolException 
+	 * @throws AuthenticationException 
 	 */
-	public List<PodcastDevice> getDevices() throws ClientProtocolException, IOException
+	public List<PodcastDevice> getDevices() throws IOException, AuthenticationException
 	{
 		String uri = _locator.deviceListUri();
 		Type collectionType = new TypeToken<ArrayList<PodcastDevice>>(){}.getType();
-		return _gson.fromJson(_client.GET(uri), collectionType);
+		try {
+			return _gson.fromJson(_client.GET(uri), collectionType);
+		} catch (HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Gpodder.net",e);
+			else
+				throw e;
+		}
 	}
 }

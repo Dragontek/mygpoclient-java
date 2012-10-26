@@ -134,10 +134,10 @@ public class Locator {
 	{
 		return downloadEpisodeActionsUri(since, null, deviceId);
 	}
-	public String downloadDeviceUpdates(long since, String deviceId)
+	public String deviceUpdatesUri(long since, String deviceId)
 	{
 		String filename = String.format("%s.json?since=%s", deviceId, since);
-		return Util.join(new String[] { this._base, this._username, filename });
+		return Util.join(new String[] { this._base, "updates", this._username, filename });
 	}
 	public String deviceSettingsUri(String deviceId)
 	{
@@ -156,9 +156,32 @@ public class Locator {
 		String filename = String.format("podcast.json?url=%s", podcastUrl);
 		return Util.join(new String[] { this._base, "data", filename });
 	}
+	
 	public String getEpisodeDataUri(String podcastUrl, String episodeUrl)
 	{
 		String filename = String.format("episode.json?podcast=%s&url=%s", podcastUrl, episodeUrl);
 		return Util.join(new String[] { this._base, "data", filename });
+	}
+	public String favoriteEpisodesUri()
+	{
+		String filename = String.format("%s.json", this._username);
+		return Util.join(new String[] {this._base, "favorites", filename });
+	}
+	
+	public String deviceSynchronizationUri()
+	{
+		String filename = String.format("%s.json", this._username);
+		return Util.join(new String[] {this._base, "sync-devices", filename });
+	}
+	
+	public String getPodcastListsUri()
+	{
+		String filename = String.format("%s.json", this._username);
+		return Util.join(new String[] {this._base, "lists", filename });
+	}
+	public String getPodcastListUri(String listName, String format)
+	{
+		String filename = String.format("%s.%s", listName, format);
+		return Util.join(new String[] {this._base, "lists", this._username, "list", filename });
 	}
 }

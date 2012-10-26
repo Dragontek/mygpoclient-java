@@ -2,13 +2,11 @@ package com.dragontek.mygpoclient.pub;
 
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
-import com.dragontek.mygpoclient.pub.ClientConfig;
-import com.dragontek.mygpoclient.pub.PublicClient;
 import com.dragontek.mygpoclient.simple.IPodcast;
-
-import junit.framework.TestCase;
 
 public class PublicClientTest extends TestCase {
 

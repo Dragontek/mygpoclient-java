@@ -1,9 +1,9 @@
 package com.dragontek.mygpoclient.json;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
-import org.apache.http.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import com.dragontek.mygpoclient.http.HttpClient;
@@ -21,7 +21,7 @@ public class JsonClient extends HttpClient {
 	}
 
 	@Override
-	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity data) throws UnsupportedEncodingException {
+	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity data) {
 		HttpUriRequest request = super.prepareRequest(method, uri, data);
 		request.addHeader("Accept", "application/json");
 		return request;

@@ -2,20 +2,25 @@ package com.dragontek.mygpoclient.extras;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.dragontek.mygpoclient.feeds.IFeed;
 import com.dragontek.mygpoclient.http.HttpClient;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Implementation of some of the basic Google Reader API
@@ -34,6 +39,13 @@ public class GoogleReaderAPI extends HttpClient {
 	public final static String STATE_STARRED = "state/com.google/starred";
 	public final static String STATE_KEPT_UNREAD = "state/com.google/kept-unread";
 	public final static String STATE_FRESH = "state/com.google/fresh";
+	
+	@Override
+	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity entity) {
+		HttpUriRequest request = super.prepareRequest(method, uri, entity);
+		request.addHeader("Authorization", "GoogleLogin auth=" + getAuthToken());
+		return request;
+	};
 	
 	public void requestActionToken() throws AuthenticationException, IOException
 	{
@@ -62,8 +74,15 @@ public class GoogleReaderAPI extends HttpClient {
         	nameValuePairs.add(new BasicNameValuePair("s", "feed/" + feedUrl));
         nameValuePairs.add(new BasicNameValuePair("T", mActionToken));
         nameValuePairs.add(new BasicNameValuePair("a", CURRENT_USER + state));
-        
-        POST(BASE_API_URI + "edit-tag", new UrlEncodedFormEntity(nameValuePairs));
+        try {
+        	POST(BASE_API_URI + "edit-tag", new UrlEncodedFormEntity(nameValuePairs));
+        } catch(HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Google Reader",e);
+			else
+				throw e;
+        }
+        	
 	}
 	public void unMark(List<String> ids, String state) throws AuthenticationException, IOException
 	{
@@ -87,10 +106,17 @@ public class GoogleReaderAPI extends HttpClient {
         
         nameValuePairs.add(new BasicNameValuePair("T", mActionToken));
         nameValuePairs.add(new BasicNameValuePair("r", CURRENT_USER + state));
+        try {
+        	POST(BASE_API_URI + "edit-tag", new UrlEncodedFormEntity(nameValuePairs));
+        } catch(HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Google Reader",e);
+			else
+				throw e;
+        }
         
-        POST(BASE_API_URI + "edit-tag", new UrlEncodedFormEntity(nameValuePairs));
 	}
-	
+
 	public List<IFeed> parseFeeds(String[] feed_urls) throws IOException
 	{
 
@@ -113,17 +139,25 @@ public class GoogleReaderAPI extends HttpClient {
 		String response = GET(BASE_API_URI + "stream/contents/feed/" +  URLEncoder.encode(url, "UTF-8"));
 		return gson.fromJson(response, GoogleFeed.class);
 	}
-	public void putSubscription(String feedUrl, String label) throws AuthenticationException, UnsupportedEncodingException, IOException
+	public void putSubscription(String feedUrl, String label) throws AuthenticationException, IOException
 	{
+        if(mActionToken == null)
+        	requestActionToken();
+
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
        	nameValuePairs.add(new BasicNameValuePair("s", "feed/" + feedUrl));
         nameValuePairs.add(new BasicNameValuePair("ac", "subscribe"));
         nameValuePairs.add(new BasicNameValuePair("a", "user/-/label/" + label));
         //nameValuePairs.add(new BasicNameValuePair("title", title));
         nameValuePairs.add(new BasicNameValuePair("T", mActionToken));
-        
-        POST(BASE_API_URI + "subscription/edit", new UrlEncodedFormEntity(nameValuePairs));
-		
+        try {
+        	POST(BASE_API_URI + "subscription/edit", new UrlEncodedFormEntity(nameValuePairs));
+        } catch(HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Google Reader",e);
+			else
+				throw e;
+        }
 	}
 	public void setLabel(String feedUrl, String label) throws AuthenticationException, UnsupportedEncodingException, IOException
 	{
@@ -133,15 +167,33 @@ public class GoogleReaderAPI extends HttpClient {
         nameValuePairs.add(new BasicNameValuePair("a", "user/-/label/" + label));
         //nameValuePairs.add(new BasicNameValuePair("title", title));
         nameValuePairs.add(new BasicNameValuePair("T", mActionToken));
-        
-        POST(BASE_API_URI + "subscription/edit", new UrlEncodedFormEntity(nameValuePairs));
+        try {
+        	POST(BASE_API_URI + "subscription/edit", new UrlEncodedFormEntity(nameValuePairs));
+        } catch(HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Google Reader",e);
+			else
+				throw e;
+        }
 		
 	}
 	public List<String> getSubscriptions(String label) throws AuthenticationException, IOException
 	{
-		String response = GET(BASE_API_URI + "subscription/list?output=json");
-		Gson gson = new Gson();
-		Type collectionType = new TypeToken<ArrayList<String>>(){}.getType();
-		return gson.fromJson(response, collectionType);
+		JsonParser parser = new JsonParser();
+		ArrayList<String> response = new ArrayList<String>();
+		try {
+			JsonObject result = (JsonObject) parser.parse(GET(BASE_API_URI + "subscription/list?output=json"));
+			JsonArray subscriptions = result.getAsJsonArray("subscriptions");
+			for(JsonElement subscription : subscriptions)
+			{
+				response.add(subscription.getAsJsonObject().get("id").getAsString().replaceFirst("feed/", ""));
+			}
+			return response;
+        } catch(HttpResponseException e) {
+			if(e.getStatusCode() == 401)
+				throw new AuthenticationException("Unable to authenticate user with Google Reader",e);
+			else
+				throw e;
+        }
 	}
 }

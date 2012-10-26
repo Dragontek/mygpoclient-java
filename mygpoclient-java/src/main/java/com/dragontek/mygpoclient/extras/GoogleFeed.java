@@ -17,7 +17,8 @@ public class GoogleFeed implements IFeed {
 	}
 	@Override
 	public String getUrl() {
-		return this.id.replace("feed/", "");
+		
+		return this.id.replaceFirst("feed/", "");
 	}
 	@Override
 	public String getDescription() {
@@ -88,7 +89,17 @@ public class GoogleFeed implements IFeed {
 		public long getReleased() {
 			return this.published;
 		}
-
+		public long getUpdated() {
+			return this.updated;
+		}
+		
+		public Origin getOrigin() {
+			return this.origin;
+		}
+		
+		public long getCrawlTimeMsec() {
+			return this.crawlTimeMsec;
+		}
 		@Override
 		public String getLink() {
 			if(this.alternate != null && this.alternate.length > 0)

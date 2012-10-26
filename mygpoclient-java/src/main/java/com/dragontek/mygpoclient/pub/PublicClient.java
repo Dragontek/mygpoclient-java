@@ -6,15 +6,12 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.client.ClientProtocolException;
-
 import com.dragontek.mygpoclient.Global;
 import com.dragontek.mygpoclient.Locator;
 import com.dragontek.mygpoclient.json.JsonClient;
 import com.dragontek.mygpoclient.simple.IPodcast;
 import com.dragontek.mygpoclient.simple.Podcast;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -62,9 +59,8 @@ public class PublicClient
         the maximum value is 100.
 	 * @return Returns a list of {@link ToplistPodcast} objects.
 	 * @throws IOException 
-	 * @throws ClientProtocolException 
 	 */
-	public List<IPodcast> getToplist(int count) throws JsonSyntaxException, ClientProtocolException, IOException
+	public List<IPodcast> getToplist(int count) throws IOException
 	{
 		String uri = _locator.toplistUri(count);
 		Type collectionType = new TypeToken<ArrayList<Podcast>>(){}.getType();
@@ -75,9 +71,8 @@ public class PublicClient
 	 * Get a list of most-subscribed podcasts
 	 * @return Returns a list of {@link ToplistPodcast} objects.
 	 * @throws IOException 
-	 * @throws ClientProtocolException 
 	 */
-	public List<IPodcast> getToplist() throws JsonSyntaxException, ClientProtocolException, IOException
+	public List<IPodcast> getToplist() throws IOException
 	{
 		return getToplist(Global.TOPLIST_DEFAULT);
 	}
@@ -87,24 +82,20 @@ public class PublicClient
 	 * @param query  specifies the search query as a string
 	 * @return Returns a list of Podcast objects.
 	 * @throws IOException 
-	 * @throws ClientProtocolException 
 	 */
-	public List<IPodcast> searchPodcast(String query) throws JsonSyntaxException, ClientProtocolException, IOException
+	public List<IPodcast> searchPodcast(String query) throws IOException
 	{
-		String uri = _locator.searchUri(URLEncoder.encode(query, "UTF-8")); 
 		Type collectionType = new TypeToken<ArrayList<Podcast>>(){}.getType();
-		return _gson.fromJson(_client.GET(uri), collectionType);
+		return _gson.fromJson(_client.GET(_locator.searchUri(URLEncoder.encode(query, "UTF-8"))), collectionType);
 	}
 	
-	public Podcast getPodcastData(String url) throws ClientProtocolException, IOException
+	public Podcast getPodcastData(String podcastUrl) throws IOException
 	{
-		String uri = _locator.getPodcastDataUri(url);
-		return _gson.fromJson(_client.GET(uri), Podcast.class);
+		return _gson.fromJson(_client.GET(_locator.getPodcastDataUri(podcastUrl)), Podcast.class);
 	}
 	
-	public ClientConfig getConfiguration() throws JsonSyntaxException, ClientProtocolException, IOException
+	public ClientConfig getConfiguration() throws IOException
 	{
-		String uri = _locator.clientConfigUri();
-		return _gson.fromJson(_client.GET(uri), ClientConfig.class);
+		return _gson.fromJson(_client.GET(_locator.clientConfigUri()), ClientConfig.class);
 	}
 }

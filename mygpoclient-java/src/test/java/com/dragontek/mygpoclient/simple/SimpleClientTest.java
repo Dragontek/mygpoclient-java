@@ -6,12 +6,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.http.HttpHost;
+import junit.framework.TestCase;
 
 import com.dragontek.mygpoclient.api.MygPodderClient;
-import com.dragontek.mygpoclient.simple.SimpleClient;
-
-import junit.framework.TestCase;
 
 public class SimpleClientTest extends TestCase {
 
@@ -41,6 +38,7 @@ public class SimpleClientTest extends TestCase {
 		System.out.println(String.format("** %s **", this.getName()) );
 		assertTrue(client.authenticate(_username, _password));
 		_authToken = client.getAuthToken();
+		assertNotNull(_authToken);
 	}
 	
 	public void testGetAuthToken() throws Exception
