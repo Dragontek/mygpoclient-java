@@ -34,7 +34,11 @@ public class MygPodderClient extends SimpleClient
 	 * for a smaller class that only implements the Simple API.
 	 * @param username
 	 * @param password
+	 * @param hostname
 	 */
+	public MygPodderClient(String username, String password, String hostname) {
+		super(username, password, hostname);
+	}
 	public MygPodderClient(String username, String password) {
 		super(username, password);
 	}
