@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -70,7 +71,7 @@ public class SimpleClientTest extends TestCase {
 	public void testGetSubscriptions() throws Exception
 	{
 		System.out.println(String.format("** %s **", this.getName()) );
-		List<String> subscriptions = client.getSubscriptions(_deviceId);
+		Set<String> subscriptions = client.getSubscriptions(_deviceId);
 		assertNotNull(subscriptions);
 		for(String subscription : subscriptions)
 		{

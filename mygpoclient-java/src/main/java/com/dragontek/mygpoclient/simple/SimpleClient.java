@@ -3,7 +3,9 @@ package com.dragontek.mygpoclient.simple;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.CookieStore;
@@ -107,10 +109,10 @@ public class SimpleClient
 		return _authToken != null;
 	}
 	
-	public List<String> getSubscriptions(String deviceId) throws IOException, AuthenticationException
+	public Set<String> getSubscriptions(String deviceId) throws IOException, AuthenticationException
 	{
 		String uri = _locator.subscriptionsUri(deviceId);
-		Type collectionType = new TypeToken<ArrayList<String>>(){}.getType();
+		Type collectionType = new TypeToken<HashSet<String>>(){}.getType();
 		try {
 			return _gson.fromJson(_client.GET(uri), collectionType);
 		} catch (HttpResponseException e) {

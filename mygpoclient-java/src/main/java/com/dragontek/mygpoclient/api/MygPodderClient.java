@@ -46,7 +46,7 @@ public class MygPodderClient extends SimpleClient
 		super(username);
 	}
 	
-	public List<String> getSubscriptions(PodcastDevice device) throws IOException, JsonSyntaxException, AuthenticationException {
+	public Set<String> getSubscriptions(PodcastDevice device) throws IOException, JsonSyntaxException, AuthenticationException {
 		return super.getSubscriptions(device.id);
 	}
 	

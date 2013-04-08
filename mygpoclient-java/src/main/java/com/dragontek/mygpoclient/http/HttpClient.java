@@ -90,12 +90,12 @@ public class HttpClient extends DefaultHttpClient {
 	
 	protected String request(String method, String uri, HttpEntity data) throws IOException
 	{
+		System.out.println(String.format("%s: %s", method, uri));
 		HttpUriRequest request = prepareRequest(method, uri, data);
 		HttpResponse response = execute(request);
 		
 		if(Global.DEBUG)
 		{
-			System.out.println(String.format("%s: %s", method, uri));
 			if(data != null)
 			{
 				System.out.println("DATA:");

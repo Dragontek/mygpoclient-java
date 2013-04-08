@@ -1,7 +1,6 @@
 package com.dragontek.mygpoclient.feeds;
 
-
-public class Feed implements IFeed {
+public class Feed {
 	private String title;
 	private String link;
 	private String description;
@@ -103,11 +102,11 @@ public class Feed implements IFeed {
 	{
 		this.logo = logo;
 	}
-	public IEpisode[] getEpisodes()
+	public Episode[] getEpisodes()
 	{
 		return this.episodes;
 	}
-	public class Episode implements IEpisode {
+	public class Episode {
 		private String guid;
 		private String title;
 		private String short_title;
@@ -121,38 +120,40 @@ public class Feed implements IFeed {
 		private Enclosure[] files;
 
 		public Enclosure getEnclosure(){
-			return files[0];
+			if(files.length > 0)
+				return files[0];
+			else
+				return null;
 		}
-		public IEnclosure[] getEnclosures() {
+		public Enclosure[] getEnclosures() {
 			return files;
 		}
-		public class Enclosure implements IEnclosure {
+		public class Enclosure {
 			private String url;
 			private String[] urls;
 			private String mimetype;
 			private long filesize;
 			
-			@Override
 			public String getUrl() {
 				if(this.url != null)
 					return this.url;
 				else if(this.urls.length > 0)
 					return this.urls[0];
 				else
-					return "";
+					return null;
 			}
 			public void setUrl(String url)
 			{
 				this.url = url;
 			}
-			@Override
+
 			public String getMimetype() {
 				return mimetype;
 			}
 			public void setMimetype(String mimetype) {
 				this.mimetype = mimetype;
 			}
-			@Override
+
 			public long getFilesize() {
 				return filesize;
 			}
@@ -161,36 +162,30 @@ public class Feed implements IFeed {
 			}
 		}
 
-
-		@Override
 		public String getGuid() {
 			return guid;
 		}
 		public void setGuid(String guid) {
 			this.guid = guid;
 		}
-		@Override
 		public String getTitle() {
 			return title;
 		}
 		public void setTitle(String title) {
 			this.title = title;
 		}
-		@Override
 		public String getDescription() {
 			return description;
 		}
 		public void setDescription(String description) {
 			this.description = description;
 		}
-		@Override
 		public String getLink() {
 			return link;
 		}
 		public void setLink(String link) {
 			this.link = link;
 		}
-		@Override
 		public long getReleased() {
 			return released;
 		}

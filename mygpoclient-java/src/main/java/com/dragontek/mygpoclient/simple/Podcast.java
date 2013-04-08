@@ -1,7 +1,6 @@
 package com.dragontek.mygpoclient.simple;
 
 import com.dragontek.mygpoclient.feeds.Feed;
-import com.dragontek.mygpoclient.feeds.IFeed;
 
 /**
  * Container class for a podcast
@@ -54,14 +53,13 @@ public class Podcast implements IPodcast {
 		this.logo_url = logo_url;
 	}
 	
-	public Podcast(IFeed feed)
+	public Podcast(Feed feed)
 	{
 		this.url = feed.getUrl();
 		this.title = feed.getTitle();
 		this.description = feed.getDescription();
 		this.website = feed.getLink();
-		if(feed instanceof Feed)
-			this.logo_url = ((Feed)feed).getLogoUrl();
+		this.logo_url = ((Feed)feed).getLogoUrl();
 	}
 	@Override
 	public String getUrl() {
