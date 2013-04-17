@@ -70,7 +70,11 @@ public class HttpClient extends DefaultHttpClient {
 	{
 		String result = null;			
 		HttpEntity entity = response.getEntity();
-		
+		System.out.println("RESPONSE");
+		for(Header header : response.getAllHeaders())
+		{
+			System.out.println("HEADER: " + header.getName() + " = " + header.getValue());
+		}
 		if (entity != null) {
 			InputStream instream = entity.getContent();
 			result= convertStreamToString(instream);

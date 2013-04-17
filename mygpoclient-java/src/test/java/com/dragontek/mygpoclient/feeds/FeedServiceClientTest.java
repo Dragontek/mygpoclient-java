@@ -2,6 +2,7 @@ package com.dragontek.mygpoclient.feeds;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -14,7 +15,7 @@ import com.dragontek.mygpoclient.feeds.Feed.Episode;
 public class FeedServiceClientTest extends TestCase {
 	FeedServiceClient feed_client;
 	String[] feed_urls = new String[] { "http://leo.am/podcasts/floss", "http://www.lightspeedmagazine.com/itunes-rss/", "http://revision3.com/trs/feed/MP4-hd30" };
-
+	
 	public FeedServiceClientTest(String name) throws ClientProtocolException, IOException
 	{
 		super(name);
@@ -23,7 +24,7 @@ public class FeedServiceClientTest extends TestCase {
 	
 	@Test
 	public void testFeedServiceClient() throws Exception {
-		FeedServiceResponse response = feed_client.parseFeeds(feed_urls, 0L, true);
+		FeedServiceResponse response = feed_client.parseFeeds(feed_urls, 1366057557396L, true);
 		assertEquals(feed_urls.length, response.size());
 		testFeed(new ArrayList<Feed>( response ));
 	}
@@ -42,6 +43,8 @@ public class FeedServiceClientTest extends TestCase {
 			
 			for(Episode e : f.getEpisodes())
 			{
+				//System.out.println(new Date(e.getReleased() * 1000).toGMTString() + " -- " + e.getTitle());
+				// TODO: Assert feed_update_timestamp > e.getReleased
 				assertNotNull(e.getGuid());
 				assertNotNull(e.getTitle());
 				assertNotNull(e.getDescription());
