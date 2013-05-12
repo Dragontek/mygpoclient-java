@@ -12,51 +12,48 @@ import com.google.gson.Gson;
 /**
  * Simple client for searching for podcasts using the iTunesSearchApi
  * <p>
- * This is the API client implementation that provides a
- * Java interface to the iTunesSearchApi.  Documentation for
- * this API can be found here:
+ * This is the API client implementation that provides a Java interface to the
+ * iTunesSearchApi. Documentation for this API can be found here:
  * 
- * http://www.apple.com/itunes/affiliates/resources/documentation/itunes-store-web-service-search-api.html
- *  
+ * http://www.apple.com/itunes/affiliates/resources/documentation/itunes-store-
+ * web-service-search-api.html
+ * 
  * @author joshua.mondragon
- *
+ * 
  */
 public class iTunesSearchApi {
 
 	// TODO: This could really be expanded to be able to search for anything in
-	// 		the iTunes store, but since this library is specific to podcasts,
-	//		I narrow down the search.
+	// the iTunes store, but since this library is specific to podcasts,
+	// I narrow down the search.
 	private String BASE_URL = "http://itunes.apple.com/search?";
 	private String FIND_URL = BASE_URL + "media=podcast&entity=podcast&term=";
 
 	private JsonClient client;
 
-	public iTunesSearchApi()
-	{
+	public iTunesSearchApi() {
 		client = new JsonClient();
 	}
-	
-	public List<IPodcast> searchPodcast(String query) throws IOException
-	{
-		String response = client.GET(FIND_URL + URLEncoder.encode(query, "UTF-8"));
-		
+
+	public List<IPodcast> searchPodcast(String query) throws IOException {
+		String response = client.GET(FIND_URL
+				+ URLEncoder.encode(query, "UTF-8"));
+
 		Gson gson = new Gson();
 		Entity entity = gson.fromJson(response, Entity.class);
-		
+
 		List<IPodcast> results = new ArrayList<IPodcast>(); // entity.results;
 		results.addAll(entity.results);
 
 		return results;
 	}
 
-	public class Entity
-	{
+	public class Entity {
 		int resultCount;
 		ArrayList<Result> results;
 	}
 
-	public class Result implements IPodcast
-	{
+	public class Result implements IPodcast {
 		private String kind;
 		private String artistName;
 		private String feedUrl;
@@ -65,34 +62,35 @@ public class iTunesSearchApi {
 		private String artworkUrl30;
 		private String artworkUrl60;
 		private String artworkUrl100;
-		
+
 		@Override
 		public String getUrl() {
 			return this.feedUrl;
 		}
-		
+
 		public String getKind() {
 			return this.kind;
 		}
-		
+
 		public String getCollectionName() {
 			return this.collectionName;
 		}
+
 		@Override
 		public String getTitle() {
 			return this.trackName;
 		}
-		
+
 		@Override
 		public String getDescription() {
 			return this.artistName;
 		}
-		
+
 		@Override
 		public String getLogoUrl() {
-			if(this.artworkUrl100 != null)
+			if (this.artworkUrl100 != null)
 				return this.artworkUrl100;
-			else if(this.artworkUrl60 != null)
+			else if (this.artworkUrl60 != null)
 				return this.artworkUrl60;
 			else
 				return this.artworkUrl30;
@@ -113,5 +111,5 @@ public class iTunesSearchApi {
 			this.artworkUrl100 = logourl;
 		}
 	}
-	
+
 }

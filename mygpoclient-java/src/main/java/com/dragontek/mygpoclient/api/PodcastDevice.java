@@ -5,9 +5,9 @@ import java.util.Dictionary;
 
 /**
  * This class encapsulates a podcast device
- *
+ * 
  * @author jmondragon
- *
+ * 
  */
 
 public class PodcastDevice {
@@ -20,30 +20,34 @@ public class PodcastDevice {
 	/** The number of podcasts this device is subscribed to */
 	public int subscriptions;
 
-	public static String[] VALID_TYPES = new String[] { "desktop", "laptop", "mobile", "server", "other" };
+	public static String[] VALID_TYPES = new String[] { "desktop", "laptop",
+			"mobile", "server", "other" };
 
-	public PodcastDevice(String deviceId, String caption, String type)
-	{
+	public PodcastDevice(String deviceId, String caption, String type) {
 		this(deviceId, caption, type, 0);
 	}
-	public PodcastDevice(String id, String caption, String type, int subscriptions)
-	{
-		if(!Arrays.asList(VALID_TYPES).contains(type))
-			throw new IllegalArgumentException(String.format("Invalid device type '%1' (see VALID_TYPES)", type));
-			
+
+	public PodcastDevice(String id, String caption, String type,
+			int subscriptions) {
+		if (!Arrays.asList(VALID_TYPES).contains(type))
+			throw new IllegalArgumentException(String.format(
+					"Invalid device type '%1' (see VALID_TYPES)", type));
+
 		this.id = id;
 		this.caption = caption;
 		this.type = type;
 		this.subscriptions = subscriptions;
 	}
-	
+
 	@Override
 	public String toString() {
-		return String.format("%s(%s, %s, %s, %s)", this.getClass().getSimpleName(), this.id, this.caption, this.type, this.subscriptions);
+		return String.format("%s(%s, %s, %s, %s)", this.getClass()
+				.getSimpleName(), this.id, this.caption, this.type,
+				this.subscriptions);
 	}
-	
-	public PodcastDevice fromDictionary(Dictionary<String, String> m)
-	{
-		return new PodcastDevice(m.get("id"), m.get("caption"), m.get("type"), Integer.parseInt( m.get("subscriptions") ));
+
+	public PodcastDevice fromDictionary(Dictionary<String, String> m) {
+		return new PodcastDevice(m.get("id"), m.get("caption"), m.get("type"),
+				Integer.parseInt(m.get("subscriptions")));
 	}
 }

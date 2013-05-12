@@ -3,14 +3,12 @@ package com.dragontek.mygpoclient.pub;
 /**
  * Container class for a toplist entry
  * 
- * This class encapsulates the metadata for a podcast
- * in the podcast toplist.
+ * This class encapsulates the metadata for a podcast in the podcast toplist.
  * 
  * @author joshua.mondragon
- *
+ * 
  */
-public class ToplistPodcast
-{
+public class ToplistPodcast {
 	/** The feed URL of the podcast */
 	public String url;
 	/** The title of the podcast */
@@ -21,18 +19,18 @@ public class ToplistPodcast
 	public int subscribers;
 	/** Last week's subscriber count */
 	public int subscribersLastWeek;
-	
+
 	// TODO: Shouldn't this just extend Podcast?
-	
-	public ToplistPodcast(String url, String title, String description, int subscribers, int subscribersLastWeek)
-	{
+
+	public ToplistPodcast(String url, String title, String description,
+			int subscribers, int subscribersLastWeek) {
 		this.url = url;
 		this.title = title;
 		this.description = description;
 		this.subscribers = subscribers;
 		this.subscribersLastWeek = subscribersLastWeek;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		// TODO Auto-generated method stub

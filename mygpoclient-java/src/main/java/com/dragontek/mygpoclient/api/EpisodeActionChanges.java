@@ -10,14 +10,13 @@ import java.util.List;
  * @see EpisodeAction
  */
 public class EpisodeActionChanges {
-	
+
 	/** A list of EpisodeAction objects */
 	public List<EpisodeAction> actions = new ArrayList<EpisodeAction>();
 	/** A timestamp value for use in future requests */
 	public long since;
-	
-	public EpisodeActionChanges(List<EpisodeAction> actions, long since)
-	{
+
+	public EpisodeActionChanges(List<EpisodeAction> actions, long since) {
 		this.actions = actions;
 		this.since = since;
 	}

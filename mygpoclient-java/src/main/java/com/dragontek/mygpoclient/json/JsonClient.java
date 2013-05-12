@@ -11,37 +11,36 @@ import com.google.gson.Gson;
 
 public class JsonClient extends HttpClient {
 
-	public JsonClient()
-	{
+	public JsonClient() {
 		super();
 	}
-	public JsonClient(String username, String password)
-	{
+
+	public JsonClient(String username, String password) {
 		super(username, password);
 	}
 
 	@Override
-	protected HttpUriRequest prepareRequest(String method, String uri, HttpEntity data) {
+	protected HttpUriRequest prepareRequest(String method, String uri,
+			HttpEntity data) {
 		HttpUriRequest request = super.prepareRequest(method, uri, data);
 		request.addHeader("Accept", "application/json");
 		return request;
 	}
 
 	@Override
-	protected String processResponse(HttpResponse response) throws IllegalStateException, IOException {
-		String data = (String) super.processResponse(response);
-		//return decode(data);
-		return data; 
+	protected String processResponse(HttpResponse response)
+			throws IllegalStateException, IOException {
+		String data = super.processResponse(response);
+		// return decode(data);
+		return data;
 	};
-	
-	public static String encode(Object data)
-	{
+
+	public static String encode(Object data) {
 		Gson gson = new Gson();
 		return gson.toJson(data);
 	}
-	
-	public static <T> T decode(String data, Class<T> clazz)
-	{
+
+	public static <T> T decode(String data, Class<T> clazz) {
 		Gson gson = new Gson();
 		return gson.fromJson(data, clazz);
 	}
